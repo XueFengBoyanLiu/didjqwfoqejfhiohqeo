@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from typing import Literal, Any
+from typing import Literal, Any, Tuple
 
 
 DAY_DICT = {'星期一': 1, '星期二': 2, '星期三': 3,
@@ -87,7 +87,7 @@ class data:
         return 1  # 互相都不全撞
 
     @staticmethod
-    def parse_day_time(daytime: str) -> tuple[int, int, int]:
+    def parse_day_time(daytime: str) -> Tuple[int, int, int, int]:
         '''
         '星期一(第3节-第4节)' -> (1, 3, 4, 0)
         '星期一(第3节-第4节)(单)' -> (1, 3, 4, 1)
