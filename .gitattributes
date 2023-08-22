@@ -1,0 +1,5 @@
+*.py eol=lf
+*.ipynb eol=lf
+*.md eol=lf
+.gitattributes eol=lf
+.gitignore eol=lf
