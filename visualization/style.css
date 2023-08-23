@@ -1,0 +1,157 @@
+body{
+    font-size: 200%;
+    --themecolor: rgb(2, 159, 107);
+}
+#main-container{
+    margin-top:2%;
+    margin-left:2%;
+    margin-right:2%;
+}
+.display-type{
+    font-weight: bolder;
+}
+#one{
+    display: grid;
+}
+#two{
+    display: none;
+}
+#three{
+    display: none;
+}
+
+/* Switch botton */
+#switch-bar{
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+}
+.swbtn{
+    background-color:var(--themecolor);
+    border-radius:4%;
+    border-style: none;
+
+    width: auto;
+    height: auto;
+
+    padding: 0.4% 1%;
+    margin-right: 0.3%;
+    margin-left:0.3%;
+
+    color: white;
+}
+.swbtn:hover{
+    cursor: pointer;
+    opacity: 0.75;
+}
+.swbtn:active{
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+
+
+/* Mode One */
+#one-overview-contianer{
+    display: flex;
+    flex-direction: row;
+}
+#one-total{
+    margin-right:10%;
+}
+#one-graphs{
+    display: flex;
+    justify-content: space-evenly;
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Dropdown Selector */
+/* Customs */
+.selected{
+    --backgourndcolor:var(--themecolor);
+    --font-corlor: white;
+}
+.select-options{
+    --backgourndcolor:var(--themecolor);
+    --font-corlor: white;
+}
+/* Other variables */
+.one-selector-container{
+    font-size: 1em;
+    height: auto;
+    width: 4.5em;
+}
+.selected{
+    font-size: 0.65em;
+}
+.select-options{
+    font-size: 0.5em;
+    padding: 0.18em 0;
+}
+/* Main */
+.one-selector-container{
+    border-width: 0;
+    box-shadow: 0 0 0.015em 0.003em rgba(0, 0, 0, 0.3);
+    position: relative;
+    user-select: none;
+}
+.selected{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--backgourndcolor);
+    color: var(--font-corlor);
+    transition: all 0.1s ease;
+}
+.selected:hover{
+    cursor: pointer;
+    opacity: 0.75;
+}
+.selected:active{
+    opacity: 0.55;
+    cursor: auto;
+}
+.select-options-container{
+    display: none;
+    flex-direction: column;
+    position:absolute;
+    width: 100%;
+}
+.select-options{
+    height: inherit;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-width: 0;
+    box-shadow: 0 0 0.015em 0.003em rgba(0, 0, 0, 0.3);
+    background-color: var(--backgourndcolor);
+    color: var(--font-corlor);
+}
+.select-options:hover{
+    cursor: pointer;
+    opacity: 0.75;
+}
+.select-options:active, .select-option-activated{
+    opacity: 0.55;
+    cursor: auto;
+}
+

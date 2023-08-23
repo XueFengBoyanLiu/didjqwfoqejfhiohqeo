@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Data Visualization</title>
+</head>
+<body>
+    <div id="main-container">
+        <div id="switch-bar">
+            <div class="swbtn" onclick="swfunc1()">总览</div>
+            <div class="swbtn" onclick="swfunc2()">学期</div>
+            <div class="swbtn" onclick="swfunc3()">冲突</div>
+        </div>
+        <div id="main-display">
+            <div class="main-display" id="one">
+                <div class="display-type">常规学期课程总览</div>
+
+                <div id="one-overview-contianer">
+                    <div id="one-total">总数：<span id='one-total-number'>xxx</span></div>
+                    <div id="one-average">平均：<span id="one-average-number">xxx</span></div>
+                </div>
+
+                <div id="one-graphs">
+                    <div id="one-tendency">
+                        <div style="display: flex;">
+                            趋势：
+                            <div class="one-selector-container">
+                                <div class="selected">
+                                    ---
+                                </div>
+                                <div class="select-options-container">
+                                </div>
+                            </div>
+                        </div>
+   
+                    </div>
+                    <div id="one-course-type">
+                        课程类型：
+                    </div>
+                </div>
+            </div>
+            <div class="main-display" id="two">
+                <div class="display-type"><span>xx</span>学期课程</div>
+            </div>
+            <div class="main-display" id="three">
+                <div class="display-type">课程冲突情况</div>
+            </div>
+        </div>
+    </div>
+
+
+
+    
+    <script src="script.js"></script>
+</body>
+</html>
