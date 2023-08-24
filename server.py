@@ -43,11 +43,11 @@ def api_sems(sems: str):
     return {'success': True, 'sems': data}, 200
 
 
-@app.route("/api/conflict")
-def api_conflict(method=['GET', 'POST']):
-    if method == 'GET':
+@app.route("/api/conflict", methods=['GET', 'POST'])
+def api_conflict():
+    if request.method == 'GET':
         return {'success': False, 'reason': 'Method not allowed'}, 405
-    elif method == 'POST':
+    elif request.method == 'POST':
         pass
         return {}, 200
     else:
@@ -76,8 +76,8 @@ def api_get_college():
     return {"success": True, "data": funcs.COLLEGE_DICT}
 
 
-@app.route('/api/get_heatmap')
-def api_get_heatmap(methods=['GET', 'POST']):
+@app.route('/api/get_heatmap', methods=['GET', 'POST'])
+def api_get_heatmap():
     '''
     data: 12*7 2d list
     '''
@@ -91,11 +91,12 @@ def api_get_heatmap(methods=['GET', 'POST']):
         college = ""
     elif request.method == 'POST':
         try:
-            with request.json as j:
-                qsn, xq, college = j['qsn'], j['xq'], j['college']
+            j = request.json
+            qsn, xq, college = j['qsn'], j['xq'], j['college']
+            del j
         except Exception:
             return {"success": False, "reason": "malformed post data"}, 400
-        if not ((type(qsn) == int) and (type(xq) == int) and (college == str)):
+        if not ((type(qsn) == int) and (type(xq) == int) and (type(college) == str)):
             return {"success": False, "reason": "malformed post data"}, 400
         if (qsn not in funcs.XQ_DICT.keys() and qsn) or (xq not in funcs.XQ_DICT[qsn] and xq) or (college not in funcs.COLLEGE_DICT.keys() and college):
             return {"success": False, "reason": "invalid range of post data"}, 400
@@ -104,8 +105,8 @@ def api_get_heatmap(methods=['GET', 'POST']):
 
     return {"success": True, "data": dataobj.get_heatmap(qsn, xq, college)}, 200
 
-@app.route('/api/get_trend')
-def api_get_trend(methods=['GET', 'POST']):
+@app.route('/api/get_trend', methods=['GET', 'POST'])
+def api_get_trend():
     '''
     return a json dict object
     '''
@@ -123,8 +124,8 @@ def api_get_trend(methods=['GET', 'POST']):
     
     return {"success": True, "data": dataobj.get_trend(college)}, 200
 
-@app.route('/api/get_typed_courses')
-def api_get_typed_courses(methods=['GET', 'POST']):
+@app.route('/api/get_typed_courses', methods=['GET', 'POST'])
+def api_get_typed_courses():
     '''
     return a json dict object
     '''
@@ -138,11 +139,12 @@ def api_get_typed_courses(methods=['GET', 'POST']):
         college = ""
     elif request.method == 'POST':
         try:
-            with request.json as j:
-                qsn, xq, college = j['qsn'], j['xq'], j['college']
+            j = request.json
+            qsn, xq, college = j['qsn'], j['xq'], j['college']
+            del j
         except Exception:
             return {"success": False, "reason": "malformed post data"}, 400
-        if not ((type(qsn) == int) and (type(xq) == int) and (college == str)):
+        if not ((type(qsn) == int) and (type(xq) == int) and (type(college) == str)):
             return {"success": False, "reason": "malformed post data"}, 400
         if (qsn not in funcs.XQ_DICT.keys() and qsn) or (xq not in funcs.XQ_DICT[qsn] and xq) or (college not in funcs.COLLEGE_DICT.keys() and college):
             return {"success": False, "reason": "invalid range of post data"}, 400
