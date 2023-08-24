@@ -166,17 +166,29 @@ class data:
         this_course_df = df[df['kch'] == kch]
 
     def get_heatmap(self, qsn: int, xq: int, school: str) -> np.ndarray:
+        '''
+        return a 12*7 array of counts of courses
+
+        12 classtimes per day, 7 days per week.
+
+        index of 12 classtimes is 0 to 11, referring to 1st to 12th class.
+
+        '''
         df = self.df.copy()
         df = df[df['qsn'] == qsn]
         df = df[df['xq'] == xq]
         df = df[df['kkxsmc'] == school]
         heatmap = np.zeros((12, 7))
-        
-        def count_heatmap(course:pd.Series)->None:
+
+        def count_heatmap(course: pd.Series) -> None:
             for sj in course['sksj']:
-                for t in range(sj[1],sj[2]+1):
-                    heatmap[t,sj[0]]+=1
-        
-        df.apply(count_heatmap,axis=1)
+                if sj[2]!=0:
+                    for t in range(sj[1]-1, sj[2]):
+                        if sj[3] == 0:
+                            heatmap[t, sj[0]] += 1
+                        else:  # 单双周
+                            heatmap[t, sj[0]] += 0.5
+
+        df.apply(count_heatmap, axis=1)
 
         return heatmap
