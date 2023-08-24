@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
-from typing import Literal, Any, Tuple
+from typing import Literal, Any, Tuple, List, Dict
+from functools import lru_cache
 
 
 DAY_DICT = {'星期一': 1, '星期二': 2, '星期三': 3,
@@ -174,7 +175,8 @@ class data:
         df = self.df
         this_course_df = df[df['kch'] == kch]
 
-    def get_heatmap(self, qsn: int, xq: int, college: str) -> np.ndarray:
+    @lru_cache
+    def get_heatmap(self, qsn: int, xq: int, college: str) -> List[List[int]]:
         '''
         return a 12*7 array of counts of courses
 
@@ -184,20 +186,46 @@ class data:
 
         '''
         df = self.df.copy()
-        df = df[df['qsn'] == qsn]
-        df = df[df['xq'] == xq]
-        df = df[df['kkxsmc'] == college]
+        if qsn:
+            df = df[df['qsn'] == qsn]
+        if xq:
+            df = df[df['xq'] == xq]
+        if college:
+            df = df[df['kkxsmc'] == college]
         heatmap = np.zeros((12, 7))
 
         def count_heatmap(course: pd.Series) -> None:
             for sj in course['sksj']:
                 if sj[2] != 0:
-                    for t in range(sj[1]-1, sj[2]):
+                    for t in range(max(sj[1] - 1, 0), min(sj[2], 12)):
                         if sj[3] == 0:
-                            heatmap[t, sj[0]] += 1
+                            heatmap[t, sj[0] - 1] += 1
                         else:  # 单双周
-                            heatmap[t, sj[0]] += 0.5
+                            heatmap[t, sj[0] - 1] += 0.5
 
         df.apply(count_heatmap, axis=1)
 
-        return heatmap
+        return heatmap.tolist()
+    
+    @lru_cache
+    def get_trend(self, college: str) -> Dict[str, int]:
+        df = self.df[self.df['college'] == college] if college else self.df.copy()
+        trend = {}
+        for sems in df['nfxq'].unique():
+            trend[sems] = int((df['nfxq'] == sems).values.sum())
+        return dict(sorted(zip(trend.keys(), trend.values())))
+    
+    @lru_cache
+    def get_typed_courses(self, qsn: int, xq: int, college: str) -> Dict[str, int]:
+        df = self.df.copy()
+        if qsn:
+            df = df[df['qsn'] == qsn]
+        if xq:
+            df = df[df['xq'] == xq]
+        if college:
+            df = df[df['kkxsmc'] == college]
+        typed_courses = {}
+        for atype in df['kctxm'].unique():
+            typed_courses[atype] = int((df['kctxm'] == atype).values.sum())
+        return dict(sorted(zip(typed_courses.keys(),typed_courses.values())))
+
