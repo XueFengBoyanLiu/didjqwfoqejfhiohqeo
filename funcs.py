@@ -245,8 +245,8 @@ class data:
         df = self.df[self.df['kkxsmc'] == COLLEGE_DICT[college]
                      ] if college else self.df.copy()
         trend = {}
-        for sems in df['nfxq'].unique():
-            trend[sems] = int((df['nfxq'] == sems).values.sum())
+        for sems in get_nfxq_UI_text().keys():
+            trend[sems] = safe_trans_int((df['nfxq'] == sems).values.sum())
         trend = dict(sorted(zip(trend.keys(), trend.values())))
         ret = []
         nfxq_UI_text = get_nfxq_UI_text()
