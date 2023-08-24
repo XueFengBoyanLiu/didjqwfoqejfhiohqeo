@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, url_for
+from flask import Flask, request, redirect, url_for, make_response
 from typing import Dict, Any
 from functools import lru_cache
 from data_cleaning import getdata
@@ -46,14 +46,30 @@ def root_redir():
     return redirect("/main.html")
     
 @app.route("/<path:subpath>")
-def static_files(subpath):
+def static_files(subpath: str):
     @lru_cache
     def getfile(subpath):
         f = open("visualization/" + subpath, mode='rb')
         data = f.read()
         f.close()
-        return data, 200
-    return getfile(subpath)
+        return data
+    resp = make_response(getfile(subpath), 200)
+    try:
+        suffix = subpath.split('/')[-1].split('.')[-1]
+        if suffix == 'css':
+            mime = "text/css"
+        elif suffix in ('html', 'htm'):
+            mime = "text/html"
+        elif suffix == 'js':
+            mime = "application/javascript"
+        elif suffix == "ico":
+            mime = "image/x-icon"
+        else:
+            mime = "application/binary"
+    except ValueError:
+        mime = "text/html"
+    resp.headers['Content-Type'] = f"{mime}; charset=utf-8"
+    return resp
 
 @app.errorhandler(404)
 def not_found(error):
