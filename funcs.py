@@ -246,15 +246,10 @@ class data:
     @lru_cache
     def get_typed_courses(self, qsn: int, xq: int, college: str) -> Dict[str, int]:
         df = self.df.copy()
-        if qsn:
-            df = df[df['qsn'] == qsn]
-        if xq:
-            df = df[df['xq'] == xq]
-        if college:
-            df = df[df['kkxsmc'] == COLLEGE_DICT[college]]
+        df = data.get_nf_xq_college_slice(df, qsn, xq, college)
         typed_courses = {}
-        for atype in df['kctxm'].unique():
-            typed_courses[atype] = int((df['kctxm'] == atype).values.sum())
+        for c_type in df['kctxm'].unique():
+            typed_courses[c_type] = int((df['kctxm'] == c_type).values.sum())
         return dict(sorted(zip(typed_courses.keys(), typed_courses.values())))
 
     @lru_cache
