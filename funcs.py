@@ -264,13 +264,13 @@ class data:
         return dict(sorted(zip(typed_courses.keys(), typed_courses.values())))
 
     @lru_cache
-    def get_weektime_distribution(self, qsn: int, xq: int, college: str) -> dict[float, int]:
+    def get_weektime_distribution(self, qsn: int, xq: int, college: str) -> list[int]:
         '''
         weektime distributions of courses
         '''
         df = self.df.copy()
         df = data.get_nf_xq_college_slice(df, qsn, xq, college)
-        d = {}
+        ret_lst=[]
 
         def count_weektime(course: pd.Series) -> None:
             weektime = 0
@@ -282,10 +282,8 @@ class data:
                     else:  # 单双周
                         weektime += thistime/2
             rweektime = round(weektime, 1)
-            if not rweektime in d.keys():
-                d[rweektime] = 0
-            d[rweektime] += 1
+            ret_lst.append(rweektime)
 
         df.apply(count_weektime, axis=1)
 
-        return d
+        return ret_lst
