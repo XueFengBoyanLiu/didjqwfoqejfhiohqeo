@@ -10,6 +10,7 @@ function loadData(){
     xhttp.open("GET", "../database.json", true);
     xhttp.send();
   }
+loadData();
 
 const selectContents=[
     {'所有学院': '所有学院',
