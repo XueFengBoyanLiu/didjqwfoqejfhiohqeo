@@ -1,3 +1,5 @@
+const colorArray=["rgb(13, 211, 82)","rgb(22, 218, 224)","rgb(224, 134, 60)","rgb(243, 121, 137)","rgb(244, 67, 54)","rgb(255, 193, 7)","rgb(96, 125, 139)","rgb(0, 188, 212)","rgb(103, 58, 183)","rgb(233, 30, 99)","rgb(255, 152, 0)","rgb(3, 169, 244)"];
+
 //import jQuery from "jquery";
 
 let data;
@@ -172,8 +174,64 @@ const swfunc2=()=>{
 
 
 
+
+
 // 第四个 热力图
+    // set the dimensions and margins of the graph
+
+function fourthGraph(heatMapData){
+    var margin = {top: 30, right: 30, bottom: 30, left: 90},
+      width = 450 - margin.left - margin.right,
+      height = 450 - margin.top - margin.bottom;
+
+    // append the svg object to the body of the page
+    // one-course-dis
+    var svg = d3.select("#one-course-dis")
+    .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+      .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+    
+    // Labels of row and columns
+    var myGroups = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
+    var myVars = ["第一节", "第二节", "第三节", "第四节", "第五节", "第六节", "第七节", "第八节", "第九节", "第十节","第十一节","第十二节"]
+    
 
 
+    // Build X scales and axis:
+    var x = d3.scaleBand()
+      .range([ 0, width ])
+      .domain(myGroups)
+      .padding(0.01);
+    svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x))
+    
+    // Build X scales and axis:
+    var y = d3.scaleBand()
+      .range([ height, 0 ])
+      .domain(myVars)
+      .padding(0.01);
+    svg.append("g")
+      .call(d3.axisLeft(y));
+    
+    // Build color scale
+    
 
+    var myColor = d3.scaleLinear()
+      .range(["white", "crimson"])
+      .domain([0,d3.max(heatMapData, function(d) { return d.value; })])
+    
+    svg.selectAll()
+        .data(heatMapData, function(d) {return d.group+':'+d.variable;})
+        .enter()
+        .append("rect")
+        .attr("x", function(d) { return x(d.group) })
+        .attr("y", function(d) { return y(d.variable) })
+        .attr("width", x.bandwidth() )
+        .attr("height", y.bandwidth() )
+        .style("fill", function(d) { return myColor(d.value)} )
+}
 
