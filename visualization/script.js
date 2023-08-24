@@ -176,7 +176,7 @@ function selchgd(){
         contentType: "application/json",
         success: (data) => {
             if (data.success)
-            secondGraph();
+            secondGraph(data.data);
             else
             window.alert(data.reason);
         },
@@ -245,6 +245,51 @@ const swfunc2=()=>{
 
 
 
+// 第二个派图
+// set the dimensions and margins of the graph
+function secondGraph(data){
+var width = 450
+    height = 450
+    margin = 40
+
+// The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
+var radius = Math.min(width, height) / 2 - margin
+
+// append the svg object to the div called 'my_dataviz'
+var svg = d3.select("#one-course-type")
+  .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+  .append("g")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+// Create dummy data
+
+// set the color scale
+var color = d3.scaleOrdinal()
+  .domain(data)
+  .range(colorArray)
+
+// Compute the position of each group on the pie:
+var pie = d3.pie()
+  .value(function(d) {return d.value; })
+var data_ready = pie(d3.entries(data))
+
+// Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+svg
+  .selectAll('whatever')
+  .data(data_ready)
+  .enter()
+  .append('path')
+  .attr('d', d3.arc()
+    .innerRadius(0)
+    .outerRadius(radius)
+  )
+  .attr('fill', function(d){ return(color(d.data.key)) })
+  .attr("stroke", "black")
+  .style("stroke-width", "2px")
+  .style("opacity", 0.7)
+}
 
 
 
@@ -273,7 +318,7 @@ function fourthGraph(heatMapData){
     
     // Labels of row and columns
     var myGroups = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
-    var myVars = ["第一节", "第二节", "第三节", "第四节", "第五节", "第六节", "第七节", "第八节", "第九节", "第十节","第十一节","第十二节"]
+    var myVars = ["第一节", "第二节", "第三节", "第四节", "第五节", "第六节", "第七节", "第八节", "第九节", "第十节","第十一节","第十二节"].reverse()
     
 
 
@@ -311,4 +356,8 @@ function fourthGraph(heatMapData){
         .attr("height", y.bandwidth() )
         .style("fill", function(d) { return myColor(d.value)} )
 }
+
+
+
+
 
