@@ -51,7 +51,7 @@ let currentCollege = "";
 
 function firstGraph(dataset) {
     for (let i of document.getElementById("one-tendency").children) {
-        i.remove()
+        i.remove();
     }
     // 定义画布大小和间距
     var padding = 40;
@@ -192,7 +192,7 @@ function selchgd(){
         contentType: "application/json",
         success: (data) => {
             if (data.success)
-            thirdGraph();
+            thirdGraph(data.data);
             else
             window.alert(data.reason);
         },
@@ -248,49 +248,132 @@ const swfunc2=()=>{
 // 第二个派图
 // set the dimensions and margins of the graph
 function secondGraph(data){
-var width = 450
-    height = 450
-    margin = 40
+    for (let i of document.getElementById("one-course-type").children) {
+        i.remove();
+    }
 
-// The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
-var radius = Math.min(width, height) / 2 - margin
+    var width = 450
+        height = 450
+        margin = 40
 
-// append the svg object to the div called 'my_dataviz'
-var svg = d3.select("#one-course-type")
-  .append("svg")
-    .attr("width", width)
-    .attr("height", height)
-  .append("g")
-    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+    // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
+    var radius = Math.min(width, height) / 2 - margin
 
-// Create dummy data
+    // append the svg object to the div called 'my_dataviz'
+    var svg = d3.select("#one-course-type")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-// set the color scale
-var color = d3.scaleOrdinal()
-  .domain(data)
-  .range(colorArray)
+    // Create dummy data
 
-// Compute the position of each group on the pie:
-var pie = d3.pie()
-  .value(function(d) {return d.value; })
-var data_ready = pie(d3.entries(data))
+    // set the color scale
+    var color = d3.scaleOrdinal()
+        .domain(data)
+        .range(colorArray)
 
-// Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
-svg
-  .selectAll('whatever')
-  .data(data_ready)
-  .enter()
-  .append('path')
-  .attr('d', d3.arc()
-    .innerRadius(0)
-    .outerRadius(radius)
-  )
-  .attr('fill', function(d){ return(color(d.data.key)) })
-  .attr("stroke", "black")
-  .style("stroke-width", "2px")
-  .style("opacity", 0.7)
+    // Compute the position of each group on the pie:
+    var pie = d3.pie()
+        .value(function(d) {return d.value; })
+    var data_ready = pie(d3.entries(data))
+
+    // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+    svg
+        .selectAll('whatever')
+        .data(data_ready)
+        .enter()
+        .append('path')
+        .attr('d', d3.arc()
+            .innerRadius(0)
+            .outerRadius(radius)
+        )
+        .attr('fill', function(d){ return(color(d.data.key)) })
+        .attr("stroke", "black")
+        .style("stroke-width", "2px")
+        .style("opacity", 0.7)
 }
 
+
+
+
+
+// 第三个 直方图
+// set the dimensions and margins of the graph
+function thirdGraph(data){
+    for (let i of document.getElementById("one-course-length").children) {
+        i.remove();
+    }
+
+        // Declare the chart dimensions and margins.
+        const width = 960;
+        const height = 500;
+        const marginTop = 20;
+        const marginRight = 20;
+        const marginBottom = 30;
+        const marginLeft = 40;
+      
+        // Bin the data.
+        const bins = d3.bin()
+            .thresholds(40)
+            .value((d) => d.key)
+          (data);
+      
+        // Declare the x (horizontal position) scale.
+        const x = d3.scaleLinear()
+            .domain([bins[0].x0, bins[bins.length - 1].x1])
+            .range([marginLeft, width - marginRight]);
+      
+        // Declare the y (vertical position) scale.
+        const y = d3.scaleLinear()
+            .domain([0, d3.max(bins, (d) => d.length)])
+            .range([height - marginBottom, marginTop]);
+      
+        // Create the SVG container.
+        const svg = d3.create("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("viewBox", [0, 0, width, height])
+            .attr("style", "max-width: 100%; height: auto;");
+      
+        // Add a rect for each bin.
+        svg.append("g")
+            .attr("fill", "steelblue")
+          .selectAll()
+          .data(bins)
+          .join("rect")
+            .attr("x", (d) => x(d.x0) + 1)
+            .attr("width", (d) => x(d.x1) - x(d.x0) - 1)
+            .attr("y", (d) => y(d.length))
+            .attr("height", (d) => y(0) - y(d.length));
+      
+        // Add the x-axis and label.
+        svg.append("g")
+            .attr("transform", `translate(0,${height - marginBottom})`)
+            .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0))
+            .call((g) => g.append("text")
+                .attr("x", width)
+                .attr("y", marginBottom - 4)
+                .attr("fill", "currentColor")
+                .attr("text-anchor", "end")
+                .text("Unemployment rate (%) →"));
+      
+        // Add the y-axis and label, and remove the domain line.
+        svg.append("g")
+            .attr("transform", `translate(${marginLeft},0)`)
+            .call(d3.axisLeft(y).ticks(height / 40))
+            .call((g) => g.select(".domain").remove())
+            .call((g) => g.append("text")
+                .attr("x", -marginLeft)
+                .attr("y", 10)
+                .attr("fill", "currentColor")
+                .attr("text-anchor", "start")
+                .text("↑ Frequency (no. of counties)"));
+      
+        // Return the SVG element.
+        return svg.node();
+}
 
 
 
@@ -300,8 +383,9 @@ svg
 
 function fourthGraph(heatMapData){
     for (let i of document.getElementById("one-course-dis").children) {
-        i.remove()
+        i.remove();
     }
+
     var margin = {top: 30, right: 30, bottom: 30, left: 90},
       width = 450 - margin.left - margin.right,
       height = 450 - margin.top - margin.bottom;
