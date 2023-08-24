@@ -16,9 +16,9 @@ body{
 #two{
     display: none;
 }
-#three{
+/* #three{
     display: none;
-}
+} */
 
 /* Switch botton */
 #switch-bar{
@@ -94,6 +94,7 @@ body{
 }
 /* Other variables */
 .one-selector-container{
+    display: inline-block;
     font-size: 1em;
     height: auto;
     width: 4.5em;

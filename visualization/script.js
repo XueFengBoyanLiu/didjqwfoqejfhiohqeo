@@ -1,30 +1,30 @@
 
 const class1=document.getElementById('one');
 const class2=document.getElementById('two');
-const class3=document.getElementById('three');
+// const class3=document.getElementById('three');
 
 const swfunc1=()=>{
     class2.style.display='none';
-    class3.style.display='none';
+    // class3.style.display='none';
 
     class1.style.display='grid';
 };
 const swfunc2=()=>{
     class1.style.display='none';
-    class3.style.display='none';
+    // class3.style.display='none';
 
     class2.style.display='grid';
 };
-const swfunc3=()=>{
-    class1.style.display='none';
-    class2.style.display='none';
+// const swfunc3=()=>{
+//     class1.style.display='none';
+//     class2.style.display='none';
 
-    class3.style.display='grid';
-};
+//     class3.style.display='grid';
+// };
 
 
 // Dropdown Selector
-const selector=document.getElementsByClassName('one-selector-container')[0];
+const Selector=document.getElementsByClassName('one-selector-container')[0];
 const selectOptionsContainer=selector.querySelector('.select-options-container');
 let currentOpenOptionsContainer;
 
