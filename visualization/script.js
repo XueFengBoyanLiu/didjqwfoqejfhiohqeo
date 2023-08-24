@@ -50,6 +50,9 @@ let currentSemester = "0-0-0";
 let currentCollege = "";
 
 function firstGraph(dataset) {
+    for (let i of document.getElementById("one-tendency").children) {
+        i.remove()
+    }
     // 定义画布大小和间距
     var padding = 40;
     var svgWidth = 600;
@@ -70,7 +73,7 @@ function firstGraph(dataset) {
     
 
     // 创建SVG元素，并设置边框
-    var svg = d3.select("body")
+    var svg = d3.select("#one-tendency")
         .append("svg") // 在body内添加一个svg元素
         .attr("width", svgWidth)
         .attr("height", svgHeight)
@@ -251,6 +254,9 @@ const swfunc2=()=>{
     // set the dimensions and margins of the graph
 
 function fourthGraph(heatMapData){
+    for (let i of document.getElementById("one-course-dis").children) {
+        i.remove()
+    }
     var margin = {top: 30, right: 30, bottom: 30, left: 90},
       width = 450 - margin.left - margin.right,
       height = 450 - margin.top - margin.bottom;
