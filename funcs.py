@@ -231,7 +231,7 @@ class data:
 
     @lru_cache
     def get_trend(self, college: str) -> list[Dict]:
-        df = self.df[self.df['college'] == COLLEGE_DICT[college]
+        df = self.df[self.df['kkxsmc'] == COLLEGE_DICT[college]
                      ] if college else self.df.copy()
         trend = {}
         for sems in df['nfxq'].unique():
