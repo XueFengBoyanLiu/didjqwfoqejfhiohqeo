@@ -205,7 +205,7 @@ function selchgd(){
         contentType: "application/json",
         success: (data) => {
             if (data.success)
-            fourthGraph();
+            fourthGraph(data.data);
             else
             window.alert(data.reason);
         },
