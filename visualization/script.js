@@ -1,5 +1,14 @@
-const colorArray=["rgb(13, 211, 82)","rgb(22, 218, 224)","rgb(224, 134, 60)","rgb(243, 121, 137)","rgb(244, 67, 54)","rgb(255, 193, 7)","rgb(96, 125, 139)","rgb(0, 188, 212)","rgb(103, 58, 183)","rgb(233, 30, 99)","rgb(255, 152, 0)","rgb(3, 169, 244)"];
-
+// const colorArray=["rgb(13, 211, 82)","rgb(22, 218, 224)","rgb(224, 134, 60)","rgb(243, 121, 137)","rgb(244, 67, 54)","rgb(255, 193, 7)","rgb(96, 125, 139)","rgb(0, 188, 212)","rgb(103, 58, 183)","rgb(233, 30, 99)","rgb(255, 152, 0)","rgb(3, 169, 244)"];
+const colorArray = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6', 
+'#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
+'#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A', 
+'#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
+'#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC', 
+'#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
+'#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680', 
+'#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
+'#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3', 
+'#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
 //import jQuery from "jquery";
 
 let data;
@@ -175,8 +184,9 @@ function selchgd(){
         dataType: "json",
         contentType: "application/json",
         success: (data) => {
-            if (data.success)
+            if (data.success){
             secondGraph(data.data);
+            console.log(Object.keys(data.data));}
             else
             window.alert(data.reason);
         },
@@ -289,6 +299,25 @@ svg
   .attr("stroke", "black")
   .style("stroke-width", "2px")
   .style("opacity", 0.7)
+
+    // 画图例以表示每种颜色对应的key值
+  var legend = d3.select('legend-of-pie');
+  for (let i=0;i<data.length;i++){
+    legend.append('div')
+    .attr('class','legend')
+    .style('display','inline-block')
+    .style('width','100px')
+    .style('height','20px')
+    .style('margin','10px')
+    .style('background-color',colorArray[i])
+    .style('color','white')
+    .style('z-position','1000')
+    .text(Object.keys(data)[i]);
+  }
+//   svg.append("circle").attr("cx",200).attr("cy",130).attr("r", 6).style("fill", "#69b3a2")
+// svg.append("circle").attr("cx",200).attr("cy",160).attr("r", 6).style("fill", "#404080")
+// svg.append("text").attr("x", 220).attr("y", 130).text("variable A").style("font-size", "15px").attr("alignment-baseline","middle")
+// svg.append("text").attr("x", 220).attr("y", 160).text("variable B").style("font-size", "15px").attr("alignment-baseline","middle")
 }
 
 
