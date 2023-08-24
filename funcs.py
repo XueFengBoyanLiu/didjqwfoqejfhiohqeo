@@ -6,10 +6,10 @@ from functools import lru_cache
 
 DAY_DICT = {'星期一': 1, '星期二': 2, '星期三': 3,
             '星期四': 4, '星期五': 5, '星期六': 6, '星期日': 7}
-DAY_REVERSED_DICT = dict(DAY_DICT.values(), DAY_DICT.keys())
+DAY_REVERSED_DICT = dict(zip(DAY_DICT.values(), DAY_DICT.keys()))
 
 NUMBER_DICT={'一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9, '十': 10, '十一': 11, '十二': 12}
-NUMBER_REVERSED_DICT = dict(NUMBER_DICT.values(), NUMBER_DICT.keys())
+NUMBER_REVERSED_DICT = dict(zip(NUMBER_DICT.values(), NUMBER_DICT.keys()))
 
 
 DS_DICT = {'星': 0, '单': 1, '双': 2}
