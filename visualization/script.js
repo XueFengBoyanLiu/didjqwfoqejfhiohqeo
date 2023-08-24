@@ -1,5 +1,19 @@
+let data;
+function loadData(){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        // console.log(this.responseText);
+        data=JSON.parse(this.responseText);
+      }
+    };
+    xhttp.open("GET", "../database.json", true);
+    xhttp.send();
+  }
+
 const selectContents=[
-    {'物理学院': '物理学院',
+    {'所有学院': '所有学院',
+    '物理学院': '物理学院',
     '体育教研部': '体育教研部',
     '城市与环境学院': '城市与环境学院',
     '新闻与传播学院': '新闻与传播学院',
@@ -52,7 +66,8 @@ const selectContents=[
     '人工智能研究院': '人工智能研究院',
     '材料科学与工程学院': '材料科学与工程学院',
     '汇丰商学院': '汇丰商学院'},
-    {'(12,2)': '2012 春',
+    {'all': '所有学期',
+    '(12,2)': '2012 春',
     '(12,3)': '2012 夏',
     '(13,1)': '2013 秋',
     '(13,2)': '2013 春',
@@ -88,6 +103,58 @@ const selectContents=[
 ]
 
 
+const semesterSelector=document.getElementById('semester-selector');
+const schoolSelector=document.getElementById('school-selector');
+let currentSemester;
+let currentSchool;
+
+
+function createOption(id,name){
+    const option=document.createElement('option');
+    option.classList.add('select-options');
+    option.style.value=id;
+    option.innerText=name;
+    return option;
+}
+
+// 创建学期下拉菜单
+function initializeSemesterSelector(selectContents){
+    const selectOptions=Object.keys(selectContents);
+    selectOptions.forEach(selectOption => {
+        const option=createOption(selectOption,selectContents[selectOption]);
+        semesterSelector.appendChild(option);
+    });
+}
+initializeSemesterSelector(selectContents[1]);
+// 创建学院下拉菜单
+function initializeSchoolSelector(selectContents){
+    const selectOptions=Object.keys(selectContents);
+    selectOptions.forEach(selectOption => {
+        const option=createOption(selectOption,selectContents[selectOption]);
+        schoolSelector.appendChild(option);
+    });
+}
+initializeSchoolSelector(selectContents[0]);
+
+
+function changeData(currentSemester,currentSchool){
+    firstGraph();
+    secondGraph();
+    thirdGraph();
+    fourthGraph();
+}
+
+semesterSelector.addEventListener('change',function(event){
+    currentSemester=event.target.value;
+    changeData(currentSemester,currentSchool);
+});
+schoolSelector.addEventListener('change',function(event){
+    currentSchool=event.target.value;
+    changeData(currentSemester,currentSchool);
+});
+
+
+
 
 
 
@@ -109,76 +176,76 @@ const swfunc2=()=>{
 
 
 
-// Dropdown Selector
-const selectors=document.getElementsByClassName('selector-container');
-console.log(selectors);
-const selectOptionsContainers=[]
-for (let i=0;i<selectors.length;i++){
-    selectOptionsContainers.push(
-        selectors[i].querySelector('.select-options-container')
-    )
-}
+// // Dropdown Selector
+// const selectors=document.getElementsByClassName('selector-container');
+// console.log(selectors);
+// const selectOptionsContainers=[]
+// for (let i=0;i<selectors.length;i++){
+//     selectOptionsContainers.push(
+//         selectors[i].querySelector('.select-options-container')
+//     )
+// }
 
-let currentOpenOptionsContainer;
+// let currentOpenOptionsContainer;
 
-for (let i=0;i<selectors.length;i++){
-    selectors[i].cache=selectContents[i];
-}
+// for (let i=0;i<selectors.length;i++){
+//     selectors[i].cache=selectContents[i];
+// }
 
-function initializeSelectorOptions(selectContents){
-    for (i=0;i<selectContents.length;i++){
-        const selectOptions=Object.keys(selectContents[i]);
-        const selectOptionsContainer=selectOptionsContainers[i];
-        selectOptions.forEach(selectOption => {
-            const option=document.createElement('option');
-            option.classList.add('select-options');
-            option.style.value=selectOption;
-            option.innerText=selectContents[i][selectOption];
-            selectOptionsContainer.appendChild(option);
-        });
-    }
+// function initializeSelectorOptions(selectContents){
+//     for (i=0;i<selectContents.length;i++){
+//         const selectOptions=Object.keys(selectContents[i]);
+//         const selectOptionsContainer=selectOptionsContainers[i];
+//         selectOptions.forEach(selectOption => {
+//             const option=document.createElement('option');
+//             option.classList.add('select-options');
+//             option.style.value=selectOption;
+//             option.innerText=selectContents[i][selectOption];
+//             selectOptionsContainer.appendChild(option);
+//         });
+//     }
 
-}
-initializeSelectorOptions(selectContents);
+// }
+// initializeSelectorOptions(selectContents);
 
-function closeOptions(){
-    currentOpenOptionsContainer.style.display='none';
-}
-function showOptions(){
-    currentOpenOptionsContainer.style.display='inline-block';
-}
+// function closeOptions(){
+//     currentOpenOptionsContainer.style.display='none';
+// }
+// function showOptions(){
+//     currentOpenOptionsContainer.style.display='inline-block';
+// }
 
-function setSelectedOptionTo(option){
-    currentOpenOptionsContainer.previousElementSibling.innerText=currentOpenOptionsContainer.parentElement.cache[option.style.value];
-    currentOpenOptionsContainer.querySelectorAll('option').forEach(option=>{
-        option.classList.remove('select-option-activated');
-    }
-    )
-    option.classList.add('select-option-activated');
-}
+// function setSelectedOptionTo(option){
+//     currentOpenOptionsContainer.previousElementSibling.innerText=currentOpenOptionsContainer.parentElement.cache[option.style.value];
+//     currentOpenOptionsContainer.querySelectorAll('option').forEach(option=>{
+//         option.classList.remove('select-option-activated');
+//     }
+//     )
+//     option.classList.add('select-option-activated');
+// }
 
-function selectorHandler1(event){
+// function selectorHandler1(event){
 
-    if (event.target.classList.contains('selected')){
-        currentOpenOptionsContainer=event.target.nextElementSibling;
-        showOptions();
-    }
-}
-function selectorHandler2(event){
-    if (event.target===currentOpenOptionsContainer.previousElementSibling){
-        return;
-    } else 
-    if(currentOpenOptionsContainer.contains(event.target)){
-        setSelectedOptionTo(event.target);
-        closeOptions();
-    } else{
-        closeOptions();
-    }
-}
+//     if (event.target.classList.contains('selected')){
+//         currentOpenOptionsContainer=event.target.nextElementSibling;
+//         showOptions();
+//     }
+// }
+// function selectorHandler2(event){
+//     if (event.target===currentOpenOptionsContainer.previousElementSibling){
+//         return;
+//     } else 
+//     if(currentOpenOptionsContainer.contains(event.target)){
+//         setSelectedOptionTo(event.target);
+//         closeOptions();
+//     } else{
+//         closeOptions();
+//     }
+// }
 
-document.addEventListener('click',selectorHandler2);
-for (let i=0;i<selectors.length;i++){
-    selectors[i].addEventListener('click',selectorHandler1);
-}
-selector.addEventListener('click',selectorHandler1);
+// document.addEventListener('click',selectorHandler2);
+// for (let i=0;i<selectors.length;i++){
+//     selectors[i].addEventListener('click',selectorHandler1);
+// }
+// selector.addEventListener('click',selectorHandler1);
 
