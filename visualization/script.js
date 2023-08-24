@@ -330,8 +330,10 @@ var svg = d3.select("#one-course-length")
 
 // get the data
 // X axis: scale and draw:
+console.log(data);
+console.log(d3.max(data, function(d) { return d.weektime }));
 var x = d3.scaleLinear()
-  .domain([0, 1000])     // can use this instead of 1000 to have the max of data: d3.max(data, function(d) { return +d.price })
+  .domain([0, d3.max(data, function(d) { return d.weektime })])     // can use this instead of 1000 to have the max of data: d3.max(data, function(d) { return +d.price })
   .range([0, width]);
 svg.append("g")
   .attr("transform", "translate(0," + height + ")")
@@ -339,7 +341,7 @@ svg.append("g")
 
 // set the parameters for the histogram
 var histogram = d3.histogram()
-  .value(function(d) { return d.price; })   // I need to give the vector of value
+  .value(function(d) { return d.weektime; })   // I need to give the vector of value
   .domain(x.domain())  // then the domain of the graphic
   .thresholds(x.ticks(70)); // then the numbers of bins
 
