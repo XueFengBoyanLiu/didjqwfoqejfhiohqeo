@@ -5,11 +5,6 @@ from bs4 import BeautifulSoup
 from functools import lru_cache
 from funcs import *
 
-def safe_trans_int(s: str) -> int:
-    try:
-        return(int(s))
-    except ValueError:
-        return 0
 
 @lru_cache
 def getdata() -> pd.DataFrame:
@@ -31,7 +26,6 @@ def getdata() -> pd.DataFrame:
     df['teacher'] = df['teacher'].apply(lambda x: BeautifulSoup(
         x, 'html.parser').get_text(',').split(','))
 
-
     temp = df['nfxq'].str.split('-')
     xq = temp.apply(lambda x: int(x[2]))
     qishinian = temp.apply(lambda x: int(x[0]))  # 起始年
@@ -44,7 +38,6 @@ def getdata() -> pd.DataFrame:
     df['zzz'] = temp.apply(lambda x: safe_trans_int(x[1]))
     del df['qzz']
 
-
-    df.sksj = df.sksj.apply(lambda lst:[data.parse_day_time(x) for x in lst])
+    df.sksj = df.sksj.apply(lambda lst: [data.parse_day_time(x) for x in lst])
 
     return df
