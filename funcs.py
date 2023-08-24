@@ -282,7 +282,7 @@ class data:
                     else:  # 单双周
                         weektime += thistime/2
             rweektime = round(weektime, 1)
-            ret_lst.append(rweektime)
+            ret_lst.append({'weektime':rweektime})
 
         df.apply(count_weektime, axis=1)
 
