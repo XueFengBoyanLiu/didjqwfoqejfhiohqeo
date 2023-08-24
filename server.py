@@ -60,12 +60,7 @@ def api_get_semesters():
     '''
     data:json
     '''
-    d = {}
-    for nf in funcs.NF_TUPLE:
-        xqs = funcs.XQ_DICT[nf]
-        for xq in xqs:
-            d[f'{nf}-{xq}'] = f'{nf+2000} {funcs.XQ_NAME_DICT[xq]}'
-    return {"success": True, "data": d}
+    return {"success": True, "data": funcs.get_nfxq_UI_text()}
 
 
 @app.route("/api/get_college")

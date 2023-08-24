@@ -95,7 +95,7 @@ function selchgd(){
     jQuery.ajax({
         url: "/api/get_typed_courses",
         type: "post",
-        data: JSON.stringify({college: currentCollege, qsn: Number(currentSemester.split('-')[0]), xq: Number(currentSemester.split('-')[1])}),
+        data: JSON.stringify({college: currentCollege, qsn: Number(currentSemester.split('-')[0]), xq: Number(currentSemester.split('-')[2])}),
         dataType: "json",
         contentType: "application/json",
         success: (data) => {
@@ -111,7 +111,7 @@ function selchgd(){
     jQuery.ajax({
         url: "/api/get_weektime_distribution",
         type: "post",
-        data: JSON.stringify({college: currentCollege, qsn: Number(currentSemester.split('-')[0]), xq: Number(currentSemester.split('-')[1])}),
+        data: JSON.stringify({college: currentCollege, qsn: Number(currentSemester.split('-')[0]), xq: Number(currentSemester.split('-')[2])}),
         dataType: "json",
         contentType: "application/json",
         success: (data) => {
@@ -127,7 +127,7 @@ function selchgd(){
     jQuery.ajax({
         url: "/api/get_heatmap",
         type: "post",
-        data: JSON.stringify({college: currentCollege, qsn: Number(currentSemester.split('-')[0]), xq: Number(currentSemester.split('-')[1])}),
+        data: JSON.stringify({college: currentCollege, qsn: Number(currentSemester.split('-')[0]), xq: Number(currentSemester.split('-')[2])}),
         dataType: "json",
         contentType: "application/json",
         success: (data) => {
