@@ -3,3 +3,8 @@
 *.md eol=lf
 .gitattributes eol=lf
 .gitignore eol=lf
+*.html eol=lf
+*.js eol=lf
+*.css eol=lf
+*.sh eol=lf
+*.bat eol=crlf

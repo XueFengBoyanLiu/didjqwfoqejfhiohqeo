@@ -1,1 +1,5 @@
-__pycache__.mypy_cachedatabase.json.gz
+__pycache__
+.mypy_cache
+database.json.gz
+.vscode
+df.pkl

@@ -50,6 +50,9 @@ class data:
         if not data.is_qzz_cover(ke1, ke2):
             return 0  # 如果起止周不重合肯定不冲
 
+        if ke1['xq'] != ke2['xq']:
+            return 0  # 如果学期不同肯定不冲
+
         def course_conflict(sj1: tuple, sj2: tuple) -> bool:
             '''
             sj:(a,b,c,d)
@@ -161,3 +164,19 @@ class data:
     def zhuangke_stat(self, kch: str) -> pd.DataFrame:
         df = self.df
         this_course_df = df[df['kch'] == kch]
+
+    def get_heatmap(self, qsn: int, xq: int, school: str) -> np.ndarray:
+        df = self.df.copy()
+        df = df[df['qsn'] == qsn]
+        df = df[df['xq'] == xq]
+        df = df[df['kkxsmc'] == school]
+        heatmap = np.zeros((12, 7))
+        
+        def count_heatmap(course:pd.Series)->None:
+            for sj in course['sksj']:
+                for t in range(sj[1],sj[2]+1):
+                    heatmap[t,sj[0]]+=1
+        
+        df.apply(count_heatmap,axis=1)
+
+        return heatmap
