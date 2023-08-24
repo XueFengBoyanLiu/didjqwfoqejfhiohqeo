@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>D3.js</title>
-    <script src="./js/d3.v7.js" charset="utf-8"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
 </head>
 
 <body>
@@ -40,10 +40,13 @@
         var innerWidth = width - margin.left - margin.right;
         var innerHeight = height - margin.top - margin.bottom;
 
+        
+        // var xScale = d3.scaleLinear()
+        //     .domain([d3.min(courseLength),d3.max(courseLength)])
         var xScale = d3.scaleBand()
             .domain(courseLength)
             .range([0, innerWidth])
-            .padding(0.1);
+            .padding(0.2);
 
         var yScale = d3.scaleLinear()
             .domain([0, d3.max(courseLengthData, function (d) { return d.count; })])
@@ -71,7 +74,7 @@
 
     };
 
-    // 把2013_spring改成2013年春
+    // 把2013_spring改成2013春
     function getChineseName(currentSemester) {
         var year = currentSemester.slice(0, 4);
         var season = currentSemester.slice(5);
@@ -84,7 +87,7 @@
                 chineseSeason = "秋";
                 break;
         }
-        return year + '年' + chineseSeason;
+        return year  + chineseSeason;
     };
 
     d3.json("course_length.json").then(function (data) {
