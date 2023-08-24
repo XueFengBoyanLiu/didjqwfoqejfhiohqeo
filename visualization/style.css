@@ -60,7 +60,9 @@ body{
     margin-right:10%;
 }
 #one-graphs{
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
     justify-content: space-evenly;
     
 }
@@ -93,10 +95,10 @@ body{
     --font-corlor: white;
 }
 /* Other variables */
-.one-selector-container{
+.selector-container{
     display: inline-block;
     font-size: 1em;
-    height: auto;
+    height: 1.5em;
     width: 4.5em;
 }
 .selected{
@@ -107,7 +109,7 @@ body{
     padding: 0.18em 0;
 }
 /* Main */
-.one-selector-container{
+.selector-container{
     border-width: 0;
     box-shadow: 0 0 0.015em 0.003em rgba(0, 0, 0, 0.3);
     position: relative;
@@ -125,10 +127,12 @@ body{
 }
 .selected:hover{
     cursor: pointer;
-    opacity: 0.75;
+    filter: contrast(150%);
+    /* opacity: 0.75; */
 }
 .selected:active{
-    opacity: 0.55;
+    /* opacity: 0.55; */
+    filter: contrast(200%);
     cursor: auto;
 }
 .select-options-container{
@@ -149,10 +153,12 @@ body{
 }
 .select-options:hover{
     cursor: pointer;
-    opacity: 0.75;
+    filter: contrast(150%);
+    /* opacity: 0.75; */
 }
 .select-options:active, .select-option-activated{
-    opacity: 0.55;
+    filter: contrast(200%);
+    /* opacity: 0.55; */
     cursor: auto;
 }
 
