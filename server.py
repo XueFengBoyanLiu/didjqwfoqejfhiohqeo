@@ -93,7 +93,7 @@ def api_get_heatmap():
             return {"success": False, "reason": "malformed post data"}, 400
         if not ((type(qsn) == int) and (type(xq) == int) and (type(college) == str)):
             return {"success": False, "reason": "malformed post data"}, 400
-        if (qsn not in funcs.XQ_DICT.keys() and qsn) or (xq not in funcs.XQ_DICT[qsn] and xq) or (college not in funcs.COLLEGE_DICT.keys() and college):
+        if (qsn and qsn not in funcs.XQ_DICT.keys()) or (xq and xq not in funcs.XQ_DICT[qsn]) or (college and college not in funcs.COLLEGE_DICT.keys()):
             return {"success": False, "reason": "invalid range of post data"}, 400
     else:
         return {"success": False, "reason": "unsupported http method"}, 503
@@ -141,7 +141,7 @@ def api_get_typed_courses():
             return {"success": False, "reason": "malformed post data"}, 400
         if not ((type(qsn) == int) and (type(xq) == int) and (type(college) == str)):
             return {"success": False, "reason": "malformed post data"}, 400
-        if (qsn not in funcs.XQ_DICT.keys() and qsn) or (xq not in funcs.XQ_DICT[qsn] and xq) or (college not in funcs.COLLEGE_DICT.keys() and college):
+        if (qsn and qsn not in funcs.XQ_DICT.keys()) or (xq and xq not in funcs.XQ_DICT[qsn]) or (college and college not in funcs.COLLEGE_DICT.keys()):
             return {"success": False, "reason": "invalid range of post data"}, 400
     else:
         return {"success": False, "reason": "unsupported http method"}, 503
@@ -170,7 +170,7 @@ def api_get_weektime_distribution():
             return {"success": False, "reason": "malformed post data"}, 400
         if not ((type(qsn) == int) and (type(xq) == int) and (type(college) == str)):
             return {"success": False, "reason": "malformed post data"}, 400
-        if (qsn not in funcs.XQ_DICT.keys() and qsn) or (xq not in funcs.XQ_DICT[qsn] and xq) or (college not in funcs.COLLEGE_DICT.keys() and college):
+        if (qsn and qsn not in funcs.XQ_DICT.keys()) or (xq and xq not in funcs.XQ_DICT[qsn]) or (college and college not in funcs.COLLEGE_DICT.keys()):
             return {"success": False, "reason": "invalid range of post data"}, 400
     else:
         return {"success": False, "reason": "unsupported http method"}, 503
