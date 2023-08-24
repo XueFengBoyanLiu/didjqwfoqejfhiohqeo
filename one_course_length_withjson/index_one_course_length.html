@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D3.js</title>
+    <script src="./js/d3.v7.js" charset="utf-8"></script>
+</head>
+
+<body>
+    <select id="currentSemester" title="学期"></select>
+    <select id="currentSchool" title="院系"></select>
+    <svg id="one-course-length"></svg>
+</body>
+
+</html>
+
+<script>
+    // 绘制柱状图的函数
+    function drawOneCourseLength(data, currentSemester, currentSchool) {
+        // 得到所选择的学期和院系对应的数据
+        var currentData = data[currentSemester][currentSchool];
+        var courseLength = Object.keys(currentData);
+        var courseLengthData = [];
+        for (var i = 0; i < courseLength.length; i++) {
+            courseLengthData.push({
+                "courseLength": courseLength[i], // 一周的学时长度
+                "count": currentData[courseLength[i]] // 该学时长度的课程数量
+            });
+        };
+
+
+        var width = 500,
+            height = 300;
+        var svg = d3.select("#one-course-length")
+                    .attr("width", width)
+                    .attr("height", height);
+        var margin = { top: 20, right: 20, bottom: 30, left: 40 };
+        var innerWidth = width - margin.left - margin.right;
+        var innerHeight = height - margin.top - margin.bottom;
+
+        var xScale = d3.scaleBand()
+            .domain(courseLength)
+            .range([0, innerWidth])
+            .padding(0.1);
+
+        var yScale = d3.scaleLinear()
+            .domain([0, d3.max(courseLengthData, function (d) { return d.count; })])
+            .range([innerHeight, 0]);
+
+        var g = svg.append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        g.append("g")
+            .attr("transform", "translate(0," + innerHeight + ")")
+            .call(d3.axisBottom(xScale));
+        g.append("g")
+            .call(
+                d3
+                .axisLeft(yScale)
+                .ticks(10));
+        g.selectAll("rect")
+            .data(courseLengthData)
+            .enter()
+            .append("rect")
+            .attr("x", function (d) { return xScale(d.courseLength); })
+            .attr("y", function (d) { return yScale(d.count); })
+            .attr("width", xScale.bandwidth())
+            .attr("height", function (d) { return innerHeight - yScale(d.count); })
+            .attr("fill", "steelblue");
+
+    };
+
+    // 把2013_spring改成2013年春
+    function getChineseName(currentSemester) {
+        var year = currentSemester.slice(0, 4);
+        var season = currentSemester.slice(5);
+        var chineseSeason = "";
+        switch (season) {
+            case "spring":
+                chineseSeason = "春";
+                break;
+            case "autumn":
+                chineseSeason = "秋";
+                break;
+        }
+        return year + '年' + chineseSeason;
+    };
+
+    d3.json("course_length.json").then(function (data) {
+            var semesters = Object.keys(data);
+        // 进行排序
+        semesters.sort(function (a, b) {
+            var yearA = parseInt(a.slice(0, 4));
+            var yearB = parseInt(b.slice(0, 4));
+            var seasonA = a.slice(5);
+            var seasonB = b.slice(5);
+
+            if (yearA < yearB) {
+                return -1;
+            } else if (yearA > yearB) {
+                return 1;
+            } else {
+                if (seasonA === "autumn" && seasonB === "spring") {
+                    return -1;
+                } else if (seasonA === "spring" && seasonB === "autumn") {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        });
+
+        
+        // 添加选择学期的下拉条
+
+        var semesterSelect = d3.select("#currentSemester");
+        semesterSelect.selectAll("option")
+            .data(semesters)
+            .enter()
+            .append("option")
+            .attr("value", function (d) { return d; })
+            .text(function (d) { return getChineseName(d); });
+
+        // 添加选择学院的下拉条
+
+        var schools = ['物理学院', '体育教研部', '城市与环境学院', '新闻与传播学院', '艺术学院', '国际关系学院',
+       '信息科学技术学院', '中国语言文学系', '化学与分子工程学院', '外国语学院', '马克思主义学院', '生命科学学院',
+       '经济学院', '政府管理学院', '历史学系', '法学院', '数学科学学院', '考古文博学院', '学生工作部人民武装部',
+       '地球与空间科学学院', '光华管理学院', '元培学院', '国家发展研究院', '哲学系', '心理学系',
+       '环境科学与工程学院', '工学院', '社会学系', '医学部教学办', '教育学院', '产业技术研究院', '英语语言文学系',
+       '信息管理系', '歌剧研究院', '北京大学教务部', '环境学院', '软件与微电子学院', '心理与认知科学学院',
+       '人口研究所', '北京大学现代农学院（筹）', '现代农学院（筹）', '建筑与景观设计学院', '教务部',
+       '对外汉语教育学院', '现代农学院', '中国共产主义青年团北京大学委员会', '创新创业学院', '前沿交叉学科研究院',
+       '人工智能研究院', '材料科学与工程学院', '中国社会科学调查中心', '汇丰商学院'];
+
+        var schoolSelect = d3.select("#currentSchool");
+        schoolSelect.selectAll("option")
+            .data(schools)
+            .enter()
+            .append("option")
+            .attr("value", function (d) { return d; })
+            .text(function (d) { return d; });
+
+        // 绘制图表
+        var semesterSelect = d3.select("#currentSemester");
+        var schoolSelect = d3.select("#currentSchool");
+
+        var currentSemester = semesterSelect.property("value");
+        var currentSchool = schoolSelect.property("value");
+
+        drawOneCourseLength(data, currentSemester, currentSchool);
+
+        // 选择之后更新绘图
+        semesterSelect.on("change", function () {
+            currentSemester = semesterSelect.property("value");
+            currentSchool = schoolSelect.property("value");
+            d3.select("#one-course-length").selectAll("*").remove();
+            drawOneCourseLength(data, currentSemester, currentSchool);
+        });
+
+        schoolSelect.on("change", function () {
+            currentSemester = semesterSelect.property("value");
+            currentSchool = schoolSelect.property("value");
+            d3.select("#one-course-length").selectAll("*").remove();
+            drawOneCourseLength(data, currentSemester, currentSchool);
+        });
+
+        
+
+
+    });
+
+
+
+
+</script>
