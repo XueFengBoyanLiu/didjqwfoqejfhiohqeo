@@ -217,7 +217,7 @@ class data:
 
         (12 classtimes per day, 7 days per week)
 
-        return: [{group:星期一,varieble:第一节,value:132},...]
+        return: [{group:星期一,variable:第一节,value:132},...]
         '''
         df = self.df.copy()
         df = data.get_nf_xq_college_slice(df, qsn, xq, college)
@@ -237,7 +237,7 @@ class data:
         ret_list=[]
         for day in range(1,8):
             for classtime in range(1,13):
-                ret_list.append({'group':DAY_REVERSED_DICT[day],'varieble':f'第{NUMBER_REVERSED_DICT[classtime]}节','value':heatmap[classtime-1,day-1]})
+                ret_list.append({'group':DAY_REVERSED_DICT[day],'variable':f'第{NUMBER_REVERSED_DICT[classtime]}节','value':heatmap[classtime-1,day-1]})
         return ret_list
 
     @lru_cache
