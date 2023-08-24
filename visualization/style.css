@@ -99,6 +99,9 @@ body{
     display: inline-block;
     font-size: 1em;
     height: 1.5em;
+    width: 8.5em;
+}
+#semester-selector{
     width: 4.5em;
 }
 .selected{
