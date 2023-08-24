@@ -191,7 +191,7 @@ class data:
         if xq:
             df = df[df['xq'] == xq]
         if college:
-            df = df[df['kkxsmc'] == college]
+            df = df[df['kkxsmc'] == COLLEGE_DICT[college]]
         heatmap = np.zeros((12, 7))
 
         def count_heatmap(course: pd.Series) -> None:
@@ -209,7 +209,7 @@ class data:
     
     @lru_cache
     def get_trend(self, college: str) -> Dict[str, int]:
-        df = self.df[self.df['college'] == college] if college else self.df.copy()
+        df = self.df[self.df['college'] == COLLEGE_DICT[college]] if college else self.df.copy()
         trend = {}
         for sems in df['nfxq'].unique():
             trend[sems] = int((df['nfxq'] == sems).values.sum())
@@ -223,7 +223,7 @@ class data:
         if xq:
             df = df[df['xq'] == xq]
         if college:
-            df = df[df['kkxsmc'] == college]
+            df = df[df['kkxsmc'] == COLLEGE_DICT[college]]
         typed_courses = {}
         for atype in df['kctxm'].unique():
             typed_courses[atype] = int((df['kctxm'] == atype).values.sum())
