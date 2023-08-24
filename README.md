@@ -1,10 +1,17 @@
 # didjqwfoqejfhiohqeo
 
+### Files Intro
+
+- read_database.ipynb           basic data washing
+- funcs.py                      some functions 
+- startserver.bat               open a local server
+- data_cleaning.py              .py version of read_database.ipynb
+- funcs_2.py                    WHH's functions (to be continued by him)
+- server.py                     connections between server and python, containing APIs
+
 2023.8.11
 
 initializations. 
-- read_database.ipynb: basic data washing
-- funcs.py: some functions 
 
 Future Plans
 1. 上课时间判定

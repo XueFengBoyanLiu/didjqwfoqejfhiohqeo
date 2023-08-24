@@ -10,9 +10,8 @@ NF_TUPLE = (12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)
 XQ_DICT = {12: (2, 3), 13: (1, 2, 3), 14: (1, 2, 3), 15: (1, 2, 3), 16: (1, 2, 3), 17: (
     1, 2, 3), 18: (1, 2, 3), 19: (1, 2, 3), 20: (1, 2, 3), 21: (1, 2, 3), 22: (1, 2, 3), 23: (1,)}
 DS_DICT = {'星': 0, '单': 1, '双': 2}
-COLLEGE_DICT = {'00001': '数学科学学院', '00003': '力学与工程科学系', '00004': '物理学院', '00010': '化学与分子工程学院', '00011': '生命科学学院', '00012': '地球与空间科学学院', '00016': '心理与认知科学学院', '00017': '软件与微电子学院', '00018': '新闻与传播学院', '00020': '中国语言文学系', '00021': '历史学系', '00022': '考古文博学院', '00023': '哲学系', '00024': '国际关系学院', '00025': '经济学院', '00028': '光华管理学院', '00029': '法学院', '00030': '信息管理系', '00031': '社会学系', '00032': '政府管理学院', '00038': '英语语言文学系', '00039': '外国语学院', '00040': '马克思主义学院', '00041': '体育教研部', '00043': '艺术学院', '00044': '对外汉语教育学院', '00046': '元培学院', '00048': '信息科学技术学院', '00055': '王选计算机研究所',
-               '00062': '国家发展研究院', '00067': '教育学院', '00068': '人口研究所', '00084': '前沿交叉学科研究院', '00086': '工学院', '00126': '城市与环境学院', '00127': '环境科学与工程学院', '00182': '分子医学研究所', '00187': '中国社会科学调查中心', '00188': '中国教育财政科学研究所', '00192': '歌剧研究院', '00195': '建筑与景观设计学院', '00199': '产业技术研究院', '00201': '汇丰商学院', '00204': '继续教育学院', '00206': '新媒体研究院', '00207': '海洋研究院', '00211': '现代农学院', '00217': '南南合作与发展学院', '00221': '习近平新时代中国特色社会主义思想研究院', '00225': '人工智能研究院', '00232': '材料科学与工程学院', '00607': '学生工作部人民武装部', '00612': '教务部', '00622': '科技开发部', '00651': '中国共产主义青年团北京大学委员会', '00671': '创新创业学院', '10180': '医学部教学办'}
-
+COLLEGE_DICT = {'': '所有学院', '00001': '数学科学学院', '00003': '力学与工程科学系', '00004': '物理学院', '00010': '化学与分子工程学院', '00011': '生命科学学院', '00012': '地球与空间科学学院', '00016': '心理与认知科学学院', '00017': '软件与微电子学院', '00018': '新闻与传播学院', '00020': '中国语言文学系', '00021': '历史学系', '00022': '考古文博学院', '00023': '哲学系', '00024': '国际关系学院', '00025': '经济学院', '00028': '光华管理学院', '00029': '法学院', '00030': '信息管理系', '00031': '社会学系', '00032': '政府管理学院', '00038': '英语语言文学系', '00039': '外国语学院', '00040': '马克思主义学院', '00041': '体育教研部', '00043': '艺术学院', '00044': '对外汉语教育学院', '00046': '元培学院', '00048': '信息科学技术学院', '00055': '王选计算机研究所',
+                '00062': '国家发展研究院', '00067': '教育学院', '00068': '人口研究所', '00084': '前沿交叉学科研究院', '00086': '工学院', '00126': '城市与环境学院', '00127': '环境科学与工程学院', '00182': '分子医学研究所', '00187': '中国社会科学调查中心', '00188': '中国教育财政科学研究所', '00192': '歌剧研究院', '00195': '建筑与景观设计学院', '00199': '产业技术研究院', '00201': '汇丰商学院', '00204': '继续教育学院', '00206': '新媒体研究院', '00207': '海洋研究院', '00211': '现代农学院', '00217': '南南合作与发展学院', '00221': '习近平新时代中国特色社会主义思想研究院', '00225': '人工智能研究院', '00232': '材料科学与工程学院', '00607': '学生工作部人民武装部', '00612': '教务部', '00622': '科技开发部', '00651': '中国共产主义青年团北京大学委员会', '00671': '创新创业学院', '10180': '医学部教学办'}
 
 
 def safe_trans_int(s: str) -> int:
@@ -20,6 +19,7 @@ def safe_trans_int(s: str) -> int:
         return(int(s))
     except ValueError:
         return 0
+
 
 class data:
 
@@ -160,6 +160,19 @@ class data:
                 teachers.append(x)
         return np.array(teachers, dtype=np.object_)
 
+    @staticmethod
+    def get_nf_xq_college_slice(df: pd.DataFrame, qsn: int, xq: int, college: str) -> pd.DataFrame:
+        '''
+        return a slice of df
+        '''
+        if qsn:
+            df = df[df['qsn'] == qsn]
+        if xq:
+            df = df[df['xq'] == xq]
+        if college:
+            df = df[df['kkxsmc'] == COLLEGE_DICT[college]]
+        return df.copy()
+
     # TODO
     def course_stable(self, kch: str) -> pd.Series:
         '''课程的稳定性。
@@ -186,12 +199,7 @@ class data:
 
         '''
         df = self.df.copy()
-        if qsn:
-            df = df[df['qsn'] == qsn]
-        if xq:
-            df = df[df['xq'] == xq]
-        if college:
-            df = df[df['kkxsmc'] == COLLEGE_DICT[college]]
+        df = data.get_nf_xq_college_slice(df, qsn, xq, college)
         heatmap = np.zeros((12, 7))
 
         def count_heatmap(course: pd.Series) -> None:
@@ -206,15 +214,16 @@ class data:
         df.apply(count_heatmap, axis=1)
 
         return heatmap.tolist()
-    
+
     @lru_cache
     def get_trend(self, college: str) -> Dict[str, int]:
-        df = self.df[self.df['college'] == COLLEGE_DICT[college]] if college else self.df.copy()
+        df = self.df[self.df['college'] == COLLEGE_DICT[college]
+                     ] if college else self.df.copy()
         trend = {}
         for sems in df['nfxq'].unique():
             trend[sems] = int((df['nfxq'] == sems).values.sum())
         return dict(sorted(zip(trend.keys(), trend.values())))
-    
+
     @lru_cache
     def get_typed_courses(self, qsn: int, xq: int, college: str) -> Dict[str, int]:
         df = self.df.copy()
@@ -227,5 +236,31 @@ class data:
         typed_courses = {}
         for atype in df['kctxm'].unique():
             typed_courses[atype] = int((df['kctxm'] == atype).values.sum())
-        return dict(sorted(zip(typed_courses.keys(),typed_courses.values())))
+        return dict(sorted(zip(typed_courses.keys(), typed_courses.values())))
 
+    @lru_cache
+    def get_weektime_distribution(self, qsn: int, xq: int, college: str) -> dict[float, int]:
+        '''
+        weektime distributions of courses
+        '''
+        df = self.df.copy()
+        df = data.get_nf_xq_college_slice(df, qsn, xq, college)
+        d = {}
+
+        def count_weektime(course: pd.Series) -> None:
+            weektime = 0
+            for sj in course['sksj']:
+                if sj[2] != 0:
+                    thistime = sj[2]-sj[1]+1
+                    if sj[3] == 0:
+                        weektime += thistime
+                    else:  # 单双周
+                        weektime += thistime/2
+            rweektime = round(weektime, 1)
+            if not rweektime in d.keys():
+                d[rweektime] = 0
+            d[rweektime] += 1
+
+        df.apply(count_weektime, axis=1)
+
+        return d

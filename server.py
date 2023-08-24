@@ -154,6 +154,34 @@ def api_get_typed_courses():
     return {"success": True, "data": dataobj.get_typed_courses(qsn, xq, college)}, 200
 
 
+@app.route('/api/get_weektime_distribution', methods=['GET', 'POST'])
+def api_get_weektime_distribution():
+    '''
+    return a json dict object
+    '''
+    qsn: int
+    xq: int
+    college: str
+    if request.method == 'GET':
+        qsn = 0
+        xq = 0
+        college = ""
+    elif request.method == 'POST':
+        try:
+            j = request.json
+            qsn, xq, college = j['qsn'], j['xq'], j['college']
+            del j
+        except Exception:
+            return {"success": False, "reason": "malformed post data"}, 400
+        if not ((type(qsn) == int) and (type(xq) == int) and (type(college) == str)):
+            return {"success": False, "reason": "malformed post data"}, 400
+        if (qsn not in funcs.XQ_DICT.keys() and qsn) or (xq not in funcs.XQ_DICT[qsn] and xq) or (college not in funcs.COLLEGE_DICT.keys() and college):
+            return {"success": False, "reason": "invalid range of post data"}, 400
+    else:
+        return {"success": False, "reason": "unsupported http method"}, 503
+    
+    return {"success": True, "data": dataobj.get_weektime_distribution(qsn, xq, college)}, 200
+
 @app.route("/")
 def root_redir():
     return redirect("/main.html")
