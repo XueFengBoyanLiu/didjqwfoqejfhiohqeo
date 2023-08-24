@@ -134,7 +134,7 @@ function initializeSemesterSelector(selectContents){
     const selectOptions=Object.keys(selectContents);
     selectOptions.forEach(selectOption => {
         const option=createOption(selectOption,selectContents[selectOption]);
-        console.log(selectContents[selectOption] + selectOption);
+        // console.log(selectContents[selectOption] + selectOption);
         semesterSelector.appendChild(option);
     });
 }
