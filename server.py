@@ -139,24 +139,23 @@ def api_get_typed_courses():
     elif request.method == 'POST':
         try:
             j = request.json
-            with open('types.log','w+') as f:
-                f.write(j['types'])
-            qsn, xq, college, types = j['qsn'], j['xq'], j['college'], j['types']
+            # qsn, xq, college, types = j['qsn'], j['xq'], j['college'], j['types']
+            qsn, xq, college = j['qsn'], j['xq'], j['college']
             del j
         except Exception:
             return {"success": False, "reason": "malformed post data"}, 400
+        # if not ((type(qsn) == int) and (type(xq) == int) and (type(college) == str)) and (type(types)==list):
         if not ((type(qsn) == int) and (type(xq) == int) and (type(college) == str)):
             return {"success": False, "reason": "malformed post data"}, 400
         if (qsn and qsn not in funcs.XQ_DICT.keys()) or (xq and xq not in funcs.XQ_DICT[qsn]) or (college and college not in funcs.COLLEGE_DICT.keys()):
             return {"success": False, "reason": "invalid range of post data"}, 400
+        # if  not all([(x in funcs.COURSE_TYPE_TUPLE) for x in types]) and bool(types):
+        #     return {'success': False, 'reason': 'unsupported types'}
     else:
         return {"success": False, "reason": "unsupported http method"}, 503
 
-
-    if not all([(x in funcs.COURSE_TYPE_TUPLE) for x in types]) and bool(types):
-        return {'success': False, 'reason': 'unsupported types'}
-
-    return {"success": True, "data": dataobj.get_typed_courses_with_types(qsn, xq, college, types)}, 200
+    # return {"success": True, "data": dataobj.get_typed_courses_with_types(qsn, xq, college, types)}, 200
+    return {"success": True, "data": dataobj.get_typed_courses(qsn, xq, college)}, 200
 
 
 @app.route('/api/get_weektime_distribution', methods=['GET', 'POST'])
