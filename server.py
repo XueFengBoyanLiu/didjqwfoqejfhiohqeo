@@ -153,7 +153,7 @@ def api_get_typed_courses():
     if not all([(x in funcs.COURSE_TYPE_TUPLE) for x in types]):
         return {'sucess':False, 'reason': 'unsupported types'}
 
-    return {"success": True, "data": dataobj.get_typed_courses_with_types(qsn, xq, college, types)}, 200
+    return {"success": True, "data": dataobj.get_typed_courses(qsn, xq, college)}, 200
 
 
 @app.route('/api/get_weektime_distribution', methods=['GET', 'POST'])
