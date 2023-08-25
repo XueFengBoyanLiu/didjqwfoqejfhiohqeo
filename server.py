@@ -7,7 +7,7 @@ import funcs
 
 app = Flask(__name__)
 
-database: pd.DataFrame = getdata()
+database: pd.DataFrame = pd.read_pickle('df.pkl')
 dataobj = funcs.data(database)
 
 
@@ -43,18 +43,6 @@ def api_sems(sems: str):
     # TODO
     data = {}
     return {'success': True, 'sems': data}, 200
-
-
-@app.route("/api/conflict", methods=['GET', 'POST'])
-def api_conflict():
-    if request.method == 'GET':
-        return {'success': False, 'reason': 'Method not allowed'}, 405
-    elif request.method == 'POST':
-        pass
-        return {}, 200
-    else:
-        return {'success': False, 'reason': 'Not implemented'}, 501
-    # TODO
 
 
 @app.route("/api/get_semesters")
@@ -139,23 +127,18 @@ def api_get_typed_courses():
     elif request.method == 'POST':
         try:
             j = request.json
-            with open('types.log','w+') as f:
-                f.write(j['types'])
             qsn, xq, college, types = j['qsn'], j['xq'], j['college'], j['types']
             del j
         except Exception:
             return {"success": False, "reason": "malformed post data"}, 400
-        if not ((type(qsn) == int) and (type(xq) == int) and (type(college) == str)):
+        if not ((type(qsn) == int) and (type(xq) == int) and (type(college) == str) and (type(types) == list)):
             return {"success": False, "reason": "malformed post data"}, 400
         if (qsn and qsn not in funcs.XQ_DICT.keys()) or (xq and xq not in funcs.XQ_DICT[qsn]) or (college and college not in funcs.COLLEGE_DICT.keys()):
             return {"success": False, "reason": "invalid range of post data"}, 400
+        if not all([(x in funcs.COURSE_TYPE_DICT.keys()) for x in types]):
+            return {'success': False, 'reason': 'unsupported types'}
     else:
         return {"success": False, "reason": "unsupported http method"}, 503
-
-
-    if not all([(x in funcs.COURSE_TYPE_TUPLE) for x in types]) and bool(types):
-        return {'success': False, 'reason': 'unsupported types'}
-
     return {"success": True, "data": dataobj.get_typed_courses_with_types(qsn, xq, college, types)}, 200
 
 
@@ -186,6 +169,34 @@ def api_get_weektime_distribution():
         return {"success": False, "reason": "unsupported http method"}, 503
 
     return {"success": True, "data": dataobj.get_weektime_distribution(qsn, xq, college)}, 200
+
+
+@app.route('/api/conflict', methods=['GET', 'POST'])
+def api_conflict():
+    '''
+    return a json dict object
+    '''
+    # 可以添加一些限定条件
+    if request.method == 'GET':
+        return {'success': False, 'reason': 'Method not allowed'}, 405
+    elif request.method == 'POST':
+        try:
+            j = request.json
+            kch = j['kch']
+            sth = ''  # qsn, xq, college = j['qsn'], j['xq'], j['college']
+            del j
+        except Exception:
+            return {"success": False, "reason": "malformed post data"}, 400
+        if not (funcs.safe_trans_int(kch)):
+            return {"success": False, "reason": "bad kch"}, 400
+        # if not ((type(qsn) == int) and (type(xq) == int) and (type(college) == str)):
+        #     return {"success": False, "reason": "malformed post data"}, 400
+        # if (qsn and qsn not in funcs.XQ_DICT.keys()) or (xq and xq not in funcs.XQ_DICT[qsn]) or (college and college not in funcs.COLLEGE_DICT.keys()):
+        #     return {"success": False, "reason": "invalid range of post data"}, 400
+    else:
+        return {"success": False, "reason": "unsupported http method"}, 503
+
+    return {"success": True, "data": dataobj.zhuangke(kch, sth)}, 200
 
 
 @app.route("/")

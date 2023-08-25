@@ -2,7 +2,6 @@ __pycache__
 .mypy_cache
 database.json.gz
 .vscode
-df.pkl
 visualization/try/
 my_test/
 *.zip
