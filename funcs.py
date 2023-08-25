@@ -8,10 +8,12 @@ DAY_DICT = {'星期一': 1, '星期二': 2, '星期三': 3,
             '星期四': 4, '星期五': 5, '星期六': 6, '星期日': 7}
 DAY_REVERSED_DICT = dict(zip(DAY_DICT.values(), DAY_DICT.keys()))
 
-NUMBER_DICT={'一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9, '十': 10, '十一': 11, '十二': 12}
+NUMBER_DICT = {'一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6,
+               '七': 7, '八': 8, '九': 9, '十': 10, '十一': 11, '十二': 12}
 NUMBER_REVERSED_DICT = dict(zip(NUMBER_DICT.values(), NUMBER_DICT.keys()))
 
-COURSE_TYPE_TUPLE=('专业任选', '专业必修', '专业限选', '体育', '全校公选课', '军事理论', '双学位', '大学英语', '实习实践', '思想政治', '文科生必修', '毕业论文/设计', '理科生必修', '辅修', '通选课')
+COURSE_TYPE_TUPLE = ('专业任选', '专业必修', '专业限选', '体育', '全校公选课', '军事理论', '双学位',
+                     '大学英语', '实习实践', '思想政治', '文科生必修', '毕业论文/设计', '理科生必修', '辅修', '通选课')
 
 DS_DICT = {'星': 0, '单': 1, '双': 2}
 NF_TUPLE = (12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)
@@ -235,10 +237,11 @@ class data:
 
         df.apply(count_heatmap, axis=1)
 
-        ret_list=[]
-        for day in range(1,8):
-            for classtime in range(1,13):
-                ret_list.append({'group':DAY_REVERSED_DICT[day],'variable':f'第{NUMBER_REVERSED_DICT[classtime]}节','value':heatmap[classtime-1,day-1]})
+        ret_list = []
+        for day in range(1, 8):
+            for classtime in range(1, 13):
+                ret_list.append(
+                    {'group': DAY_REVERSED_DICT[day], 'variable': f'第{NUMBER_REVERSED_DICT[classtime]}节', 'value': heatmap[classtime-1, day-1]})
         return ret_list
 
     @lru_cache
@@ -256,33 +259,34 @@ class data:
         return ret
 
     @lru_cache
-    def get_typed_courses_with_types(self, qsn: int, xq: int, college: str,types:list[str]) -> Dict[str, int]:
-        origin_typed_courses=self.get_typed_courses(qsn,xq,college)
-        ret_d={}
+    def get_typed_courses_with_types(self, qsn: int, xq: int, college: str, types: list[str]) -> Dict[str, int]:
+        origin_typed_courses = self.get_typed_courses(qsn, xq, college)
+        ret_d = {}
         for x in types:
-            ret_d[x]=origin_typed_courses[x]
+            ret_d[x] = origin_typed_courses[x]
         return ret_d
 
     @lru_cache
     def get_typed_courses(self, qsn: int, xq: int, college: str) -> Dict[str, int]:
         df = self.df.copy()
         df = data.get_nf_xq_college_slice(df, qsn, xq, college)
-        
-        typed_courses = dict(zip(COURSE_TYPE_TUPLE,np.zeros(len(COURSE_TYPE_TUPLE))))
-        
+
+        typed_courses = dict(
+            zip(COURSE_TYPE_TUPLE, np.zeros(len(COURSE_TYPE_TUPLE))))
+
         for c_type in df['kctxm'].unique():
             typed_courses[c_type] = int((df['kctxm'] == c_type).values.sum())
 
         return typed_courses
 
     @lru_cache
-    def get_weektime_distribution(self, qsn: int, xq: int, college: str) -> list[dict[str,int]]:
+    def get_weektime_distribution(self, qsn: int, xq: int, college: str) -> list[dict[str, int]]:
         '''
         weektime distributions of courses
         '''
         df = self.df.copy()
         df = data.get_nf_xq_college_slice(df, qsn, xq, college)
-        ret_lst=[]
+        ret_lst = []
 
         def count_weektime(course: pd.Series) -> None:
             weektime = 0
@@ -294,7 +298,7 @@ class data:
                     else:  # 单双周
                         weektime += thistime/2
             rweektime = round(weektime, 1)
-            ret_lst.append({'weektime':rweektime})
+            ret_lst.append({'weektime': rweektime})
 
         df.apply(count_weektime, axis=1)
 
