@@ -124,19 +124,26 @@ def api_get_trend():
     '''
     return a json dict object
     '''
-
-    college: str = ""
+    nf: int | List[int]
+    xq: int | List[int]
+    college: str | List[str]
     if request.method == "GET":
-        pass
+        nf = 0
+        xq = 0
+        college = ""
     elif request.method == "POST":
         try:
-            college = request.json['college']
+            j = request.json
+            nf, xq, college= j['nf'], j['xq'], j['college']
+            del j
         except Exception:
             return {"success": False, "reason": "malformed post data"}, 400
+        if (message := nfxqcol_valid(nf, xq, college)):
+            return message
     else:
         return {"success": False, "reason": "unsupported http method"}, 400
 
-    return {"success": True, "data": dataobj.get_trend(college)}, 200
+    return {"success": True, "data": dataobj.get_trend(nf,xq,college)}, 200
 
 
 @app.route('/api/get_typed_courses', methods=['GET', 'POST'])
@@ -148,6 +155,7 @@ def api_get_typed_courses():
     nf: int | List[int]
     xq: int | List[int]
     college: str | List[str]
+    types: List[int]
     if request.method == 'GET':
         nf = 0
         xq = 0

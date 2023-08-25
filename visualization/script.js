@@ -1,4 +1,4 @@
-const is_debugging=true;
+const is_debugging=false;
 
 const colorArray=['rgb(122,40,204)', 'rgb(70,40,204)', 'rgb(40,86,204)', 'rgb(40,142,204)', 'rgb(40,180,204)', 'rgb(40,204,191)', 'rgb(40,204,153)', 'rgb(40,204,106)', 'rgb(51,204,40)', 'rgb(153,204,40)', 'rgb(204,156,40)', 'rgb(204,111,40)', 'rgb(204,84,40)', 'rgb(204,60,40)', 'rgb(204,40,40)'];
 // const colorArray = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6', 
@@ -279,7 +279,7 @@ function createOption(id, name) {
 var NF_ARRAY;
 var NF1;
 var NF2;
-var XQ=1;
+var XQ=[1,2];
 
 function initialize_NF(semester_json) {
     NF_ARRAY=semester_json['NF'];
@@ -298,8 +298,30 @@ function initializeSchoolSelector(selectContents) {
 // var NF1 = Number(currentSemester.split('-')[0]);
 // var NF2 = Number(currentSemester2.split('-')[0]);
 
+const xq1el = document.getElementById('xq1');
+const xq2el = document.getElementById('xq2');
+const xq3el = document.getElementById('xq3');
+xq1el.checked=true;
+xq2el.checked=true;
+xq3el.checked=false;
+
+function xq_refresh(){
+    XQ=[]
+    if(xq1el.checked)
+        XQ.push(1)
+    if(xq2el.checked)
+        XQ.push(2)
+    if(xq3el.checked)
+        XQ.push(3)
+}
+
+
+xq1el.addEventListener('input', (event) => {xq_refresh();})
+xq2el.addEventListener('input', (event) => {xq_refresh();})
+xq3el.addEventListener('input', (event) => {xq_refresh();})
+
+
 function selchgd() {
-    var XQ=1;
     var NF = [NF1, NF2];
     
     if(is_debugging)
@@ -308,7 +330,7 @@ function selchgd() {
     jQuery.ajax({
         url: "/api/get_trend",
         type: "post",
-        data: JSON.stringify({ college: currentCollege }),
+        data: JSON.stringify({ college: currentCollege, nf: NF, xq: XQ}),
         dataType: "json",
         contentType: "application/json",
         success: function (data) {
@@ -318,7 +340,7 @@ function selchgd() {
                 window.alert(data.reason);
         },
         error: function (data) {
-            window.alert("update failed");
+            window.alert("trend update failed");
         }
     });
 
@@ -874,6 +896,7 @@ function ForceGraph({
 
 
 // 初始化
+
 selchgd();
 
 

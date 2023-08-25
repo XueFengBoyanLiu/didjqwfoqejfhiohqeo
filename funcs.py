@@ -264,12 +264,14 @@ class data:
         return ret_list
 
     @lru_cache
-    def get_trend(self, college: str) -> List[Dict]:
-        df = self.df[self.df['kkxsmc'] == COLLEGE_DICT[college]
-                     ] if college else self.df.copy()
+    def get_trend(self, nf: int | List[int], xq: int | List[int], college: str | List[str]) -> List[Dict]:
+
+        df=self.df.copy()
+        df = data.get_nf_xq_college_slice(df,nf,xq,college)
         trend = {}
         for sems in get_nfxq_UI_text().keys():
-            trend[sems] = safe_trans_int((df['nfxq'] == sems).values.sum())
+            if (v:=safe_trans_int((df['nfxq'] == sems).values.sum())):
+                trend[sems] = v
         trend = dict(sorted(zip(trend.keys(), trend.values())))
         ret = []
         nfxq_UI_text = get_nfxq_UI_text()

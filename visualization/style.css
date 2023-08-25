@@ -225,7 +225,7 @@ select:focus + .focus {
 
 #slideTool{
     width: 305px;
-    height: 3px;
+    height: 5px;
     position: relative;
     background-color: lightgray;
     display: inline-block;
@@ -235,7 +235,7 @@ select:focus + .focus {
 #slider1{height: 15px;width: 15px;background: white;border: 1px solid #ab6969;display: block;border-radius: 10px;position: absolute;top: -6px;z-index: 20;}
 #slider2{height: 15px;width: 15px;background: white;border: 1px solid #ab6969;display: block;border-radius: 10px;position: absolute;top: -6px;left:300px;z-index: 20;}
 #value1{
-    margin-top: -25px;
+    margin-top: -40px;
     position: absolute;
     width: 30px;
     background-color: black;
@@ -245,7 +245,7 @@ select:focus + .focus {
     border-radius: 3px;
 }
 #value2{
-    margin-top: -25px;
+    margin-top: -40px;
     position: absolute;
     width: 30px;
     background-color: black;
