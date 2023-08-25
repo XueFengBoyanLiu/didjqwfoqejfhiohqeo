@@ -148,8 +148,9 @@ jQuery.ajax({
     dataType: "json",
     success: function (data) {
         if (data.success){
-            initializeSemesterSelector(data.data);
-            initializeSemesterSelector2(data.data);
+            // initializeSemesterSelector(data.data);
+            // initializeSemesterSelector2(data.data);
+            initialize_NF(data.data);
         }
         else
             window.alert(data.reason);
@@ -173,11 +174,11 @@ jQuery.ajax({
     }
 })
 
-const semesterSelector = document.getElementById('semester-selector');
-const semesterSelector2 = document.getElementById('semester-selector2');
+// const semesterSelector = document.getElementById('semester-selector');
+// const semesterSelector2 = document.getElementById('semester-selector2');
 const schoolSelector = document.getElementById('school-selector');
-let currentSemester = "12-13-1";
-let currentSemester2 = "22-23-1";
+// let currentSemester = "12-13-1";
+// let currentSemester2 = "22-23-1";
 let currentCollege = "00001";
 
 function firstGraph(dataset) {
@@ -263,16 +264,28 @@ function createOption(id, name) {
     return option;
 }
 
-// 创建学期下拉菜单
-function initializeSemesterSelector(selectContents) {
-    const selectOptions = Object.keys(selectContents);
-    selectOptions.forEach(selectOption => {
-        const option = createOption(selectOption, selectContents[selectOption]);
-        // console.log(selectContents[selectOption] + selectOption);
-        semesterSelector.appendChild(option);
-    });
-}
 
+// initializations
+// 创建学期下拉菜单
+// function initializeSemesterSelector(selectContents) {
+//     const selectOptions = Object.keys(selectContents);
+//     selectOptions.forEach(selectOption => {
+//         const option = createOption(selectOption, selectContents[selectOption]);
+//         // console.log(selectContents[selectOption] + selectOption);
+//         semesterSelector.appendChild(option);
+//     });
+// }
+// 创建学期双滑块
+var NF_ARRAY;
+var NF1;
+var NF2;
+var XQ=1;
+
+function initialize_NF(semester_json) {
+    NF_ARRAY=semester_json['NF'];
+    NF1=NF_ARRAY[0];
+    NF2=NF_ARRAY[NF_ARRAY.length-1];
+}
 // 创建学院下拉菜单
 function initializeSchoolSelector(selectContents) {
     const selectOptions = Object.keys(selectContents);
@@ -282,11 +295,12 @@ function initializeSchoolSelector(selectContents) {
     });
 }
 
-var NF1 = Number(currentSemester.split('-')[0]);
-var NF2 = Number(currentSemester2.split('-')[0]);
-var NF = [NF1, NF2];
+// var NF1 = Number(currentSemester.split('-')[0]);
+// var NF2 = Number(currentSemester2.split('-')[0]);
+
 function selchgd() {
-    var XQ=Number(currentSemester.split('-')[2]);
+    var XQ=1;
+    var NF = [NF1, NF2];
     
     if(is_debugging)
         window.alert(JSON.stringify({ college: currentCollege, nf: NF, xq: XQ}));
@@ -369,8 +383,8 @@ function selchgd() {
     });
 };
 
-semesterSelector.addEventListener('change', (event) => { currentSemester = event.target.selectedOptions[0].style.myid; selchgd(); });
-semesterSelector2.addEventListener('change', (event) => { currentSemester2 = event.target.selectedOptions[0].style.myid; selchgd(); });
+// semesterSelector.addEventListener('change', (event) => { currentSemester = event.target.selectedOptions[0].style.myid; selchgd(); });
+// semesterSelector2.addEventListener('change', (event) => { currentSemester2 = event.target.selectedOptions[0].style.myid; selchgd(); });
 schoolSelector.addEventListener('change', (event) => { currentCollege = event.target.selectedOptions[0].style.myid; selchgd(); });
 
 
@@ -620,7 +634,6 @@ function fourthGraph(heatMapData) {
 
 }
 
-const NF_ARRAY=[12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
 var slider1 =document.getElementById("slider1");
 var slider2 =document.getElementById("slider2");
 var slideTool =document.getElementById("slideTool");
@@ -657,7 +670,7 @@ slider1.onmousedown=function(e){
         }
         $("#value1").text(value);
         $("#value1").attr("value",value);
-        NF1=value
+        NF1=value;
     }
     //当鼠标按键抬起时解绑鼠标移动事件
     document.onmouseup=function(e){
@@ -692,7 +705,7 @@ slider2.onmousedown=function(e){
         }
         $("#value2").text(value);
         $("#value2").attr("value",value);
-        NF2=value
+        NF2=value;
     }
     document.onmouseup=function(){
         document.onmousemove=null;

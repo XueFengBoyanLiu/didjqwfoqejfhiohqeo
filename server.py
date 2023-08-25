@@ -80,7 +80,7 @@ def api_get_semesters():
     '''
     data:json
     '''
-    return {"success": True, "data": funcs.get_nfxq_UI_text()}
+    return {"success": True, "data": {'NF':list(funcs.NF_TUPLE)}}
 
 
 @app.route("/api/get_college")
