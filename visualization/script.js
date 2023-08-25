@@ -282,7 +282,8 @@ function selchgd(){
             window.alert(data.reason);
         },
         error: (data) => {
-            window.alert("update failed");
+            console.log(data);
+            window.alert("update failed here");
         }
     });
     jQuery.ajax({
