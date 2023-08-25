@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from typing import Literal, Any, Tuple, List, Dict
+from typing import Literal, Any, Tuple, List, Dict,Callable
 from functools import lru_cache
 
 
@@ -12,8 +12,8 @@ NUMBER_DICT = {'一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6,
                '七': 7, '八': 8, '九': 9, '十': 10, '十一': 11, '十二': 12}
 NUMBER_REVERSED_DICT = dict(zip(NUMBER_DICT.values(), NUMBER_DICT.keys()))
 
-COURSE_TYPE_TUPLE = ('专业任选', '专业必修', '专业限选', '体育', '全校公选课', '军事理论', '双学位',
-                     '大学英语', '实习实践', '思想政治', '文科生必修', '毕业论文/设计', '理科生必修', '辅修', '通选课')
+COURSE_TYPE_DICT = dict(zip(list(range(0,15)),('专业任选', '专业必修', '专业限选', '体育', '全校公选课', '军事理论', '双学位',
+                     '大学英语', '实习实践', '思想政治', '文科生必修', '毕业论文/设计', '理科生必修', '辅修', '通选课')))
 
 DS_DICT = {'星': 0, '单': 1, '双': 2}
 NF_TUPLE = (12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)
@@ -45,6 +45,9 @@ def get_nfxq_UI_text() -> dict[str, str]:
                 d[f'{nf}-{nf+1}-{xq}'] = f'{nf+2001} {XQ_NAME_DICT[xq]}'
     return d
 
+# delete this when all finished
+def lru_cache(anyany:Callable)->Callable:
+    return anyany
 
 class data:
 
@@ -258,22 +261,21 @@ class data:
             ret.append({'semester': nfxq_UI_text[key], 'count': value})
         return ret
 
-    @lru_cache
-    def get_typed_courses_with_types(self, qsn: int, xq: int, college: str, types: list[str]) -> Dict[str, int]:
+    # @lru_cache    这个加了会报错！！！不知原因
+    def get_typed_courses_with_types(self, qsn: int, xq: int, college: str, types:list[int]) -> Dict[str, int]:
         origin_typed_courses = self.get_typed_courses(qsn, xq, college)
         ret_d = {}
         for x in types:
-            ret_d[x] = origin_typed_courses[x]
+            ret_d[COURSE_TYPE_DICT[x]] = origin_typed_courses[COURSE_TYPE_DICT[x]]
         return ret_d
 
     @lru_cache
     def get_typed_courses(self, qsn: int, xq: int, college: str) -> Dict[str, int]:
         df = self.df.copy()
         df = data.get_nf_xq_college_slice(df, qsn, xq, college)
-
         typed_courses = dict(
-            zip(COURSE_TYPE_TUPLE, np.zeros(len(COURSE_TYPE_TUPLE))))
-
+            zip(COURSE_TYPE_DICT.values(), np.zeros(len(COURSE_TYPE_DICT))))
+        
         for c_type in df['kctxm'].unique():
             typed_courses[c_type] = int((df['kctxm'] == c_type).values.sum())
 
