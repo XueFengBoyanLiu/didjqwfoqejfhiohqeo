@@ -270,7 +270,7 @@ function selchgd(){
     jQuery.ajax({
         url: "/api/get_typed_courses",
         type: "post",
-        data: JSON.stringify({college: currentCollege, qsn: Number(currentSemester.split('-')[0]), xq: Number(currentSemester.split('-')[2]),types:currentTypes}),
+        data: JSON.stringify({college: currentCollege, qsn: Number(currentSemester.split('-')[0]), xq: Number(currentSemester.split('-')[2]),'types':currentTypes}),
         dataType: "json",
         contentType: "application/json",
         success: (data) => {
