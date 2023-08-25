@@ -1,14 +1,14 @@
-// const colorArray=["rgb(13, 211, 82)","rgb(22, 218, 224)","rgb(224, 134, 60)","rgb(243, 121, 137)","rgb(244, 67, 54)","rgb(255, 193, 7)","rgb(96, 125, 139)","rgb(0, 188, 212)","rgb(103, 58, 183)","rgb(233, 30, 99)","rgb(255, 152, 0)","rgb(3, 169, 244)"];
-const colorArray = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
-    '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
-    '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
-    '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
-    '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC',
-    '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
-    '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680',
-    '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
-    '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
-    '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
+const colorArray=['rgb(122,40,204)', 'rgb(70,40,204)', 'rgb(40,86,204)', 'rgb(40,142,204)', 'rgb(40,180,204)', 'rgb(40,204,191)', 'rgb(40,204,153)', 'rgb(40,204,106)', 'rgb(51,204,40)', 'rgb(153,204,40)', 'rgb(204,156,40)', 'rgb(204,111,40)', 'rgb(204,84,40)', 'rgb(204,60,40)', 'rgb(204,40,40)'];
+// const colorArray = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6', 
+// '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
+// '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A', 
+// '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
+// '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC', 
+// '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
+// '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680', 
+// '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
+// '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3', 
+// '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
 //import jQuery from "jquery";
 const typeArray = ['专业任选', '专业必修', '专业限选', '体育', '全校公选课', '军事理论', '双学位', '大学英语', '实习实践', '思想政治', '文科生必修', '毕业论文/设计', '理科生必修', '辅修', '通选课'];
 const typeObject = {};
@@ -155,7 +155,7 @@ function firstGraph(dataset) {
     // 定义画布大小和间距
     var padding = 40;
     var svgWidth = 600;
-    var svgHeight = 400;
+    var svgHeight = 500;
 
     // 定义x轴比例尺
     var xScale = d3.scaleBand()
@@ -440,10 +440,10 @@ function thirdGraph(data) {
         i.remove();
     }
 
-    // set the dimensions and margins of the graph
-    var margin = { top: 10, right: 30, bottom: 30, left: 40 },
-        width = 460 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+// set the dimensions and margins of the graph
+var margin = {top: 10, right: 30, bottom: 30, left: 40},
+width = 590 - margin.left - margin.right,
+height = 435 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
     var svg = d3.select("#one-course-length")
