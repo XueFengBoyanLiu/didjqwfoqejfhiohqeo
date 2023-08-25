@@ -10,11 +10,13 @@ app = Flask(__name__)
 database: pd.DataFrame = getdata()
 dataobj = funcs.data(database)
 
+
 def sems_valid(sems: str) -> Tuple[int, int] | None:
     sems = sems.split('-')
-    if not ((nf := funcs.safe_trans_int(sems[0]) in funcs.NF_TUPLE) and (xq:=funcs.safe_trans_int(sems[1]) in funcs.XQ_DICT[nf])):
+    if not ((nf := funcs.safe_trans_int(sems[0]) in funcs.NF_TUPLE) and (xq := funcs.safe_trans_int(sems[1]) in funcs.XQ_DICT[nf])):
         return None
     return nf, xq
+
 
 @app.route("/api/teapot")
 def api_teapot():
@@ -35,11 +37,11 @@ def api_sems(sems: str):
     '''
     sems = sems.split('-')
 
-    if not ((nf := funcs.safe_trans_int(sems[0]) in funcs.NF_TUPLE) and (xq:=funcs.safe_trans_int(sems[1]) in funcs.XQ_DICT[nf])):
+    if not ((nf := funcs.safe_trans_int(sems[0]) in funcs.NF_TUPLE) and (xq := funcs.safe_trans_int(sems[1]) in funcs.XQ_DICT[nf])):
         return {'success': False, 'reason': 'invalid sems'}, 404
 
     # TODO
-    data={}
+    data = {}
     return {'success': True, 'sems': data}, 200
 
 
@@ -100,6 +102,7 @@ def api_get_heatmap():
 
     return {"success": True, "data": dataobj.get_heatmap(qsn, xq, college)}, 200
 
+
 @app.route('/api/get_trend', methods=['GET', 'POST'])
 def api_get_trend():
     '''
@@ -116,8 +119,9 @@ def api_get_trend():
             return {"success": False, "reason": "malformed post data"}, 400
     else:
         return {"success": False, "reason": "unsupported http method"}, 400
-    
+
     return {"success": True, "data": dataobj.get_trend(college)}, 200
+
 
 @app.route('/api/get_typed_courses', methods=['GET', 'POST'])
 def api_get_typed_courses():
@@ -135,7 +139,7 @@ def api_get_typed_courses():
     elif request.method == 'POST':
         try:
             j = request.json
-            qsn, xq, college = j['qsn'], j['xq'], j['college']
+            qsn, xq, college, types = j['qsn'], j['xq'], j['college'], j['types']
             del j
         except Exception:
             return {"success": False, "reason": "malformed post data"}, 400
@@ -145,8 +149,11 @@ def api_get_typed_courses():
             return {"success": False, "reason": "invalid range of post data"}, 400
     else:
         return {"success": False, "reason": "unsupported http method"}, 503
-    
-    return {"success": True, "data": dataobj.get_typed_courses(qsn, xq, college)}, 200
+
+    if not all([(x in funcs.COURSE_TYPE_TUPLE) for x in types]):
+        return {'sucess':False, 'reason': 'unsupported types'}
+
+    return {"success": True, "data": dataobj.get_typed_courses_with_types(qsn, xq, college, types)}, 200
 
 
 @app.route('/api/get_weektime_distribution', methods=['GET', 'POST'])
@@ -174,8 +181,9 @@ def api_get_weektime_distribution():
             return {"success": False, "reason": "invalid range of post data"}, 400
     else:
         return {"success": False, "reason": "unsupported http method"}, 503
-    
+
     return {"success": True, "data": dataobj.get_weektime_distribution(qsn, xq, college)}, 200
+
 
 @app.route("/")
 def root_redir():
