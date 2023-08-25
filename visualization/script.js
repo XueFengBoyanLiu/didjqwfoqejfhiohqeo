@@ -264,12 +264,11 @@ function initializeSchoolSelector(selectContents) {
     });
 }
 
+var NF1 = Number(currentSemester.split('-')[0]);
+var NF2 = Number(currentSemester2.split('-')[0]);
+var NF = [NF1, NF2];
 function selchgd() {
-
-    const NF1 = Number(currentSemester.split('-')[0]);
-    const NF2 = Number(currentSemester2.split('-')[0]);
-    const NF = [NF1, NF2];
-    const XQ=Number(currentSemester.split('-')[2]);
+    var XQ=Number(currentSemester.split('-')[2]);
     
     if(is_debugging)
         window.alert(JSON.stringify({ college: currentCollege, nf: NF, xq: XQ}))
@@ -595,6 +594,85 @@ function fourthGraph(heatMapData) {
         })
     }
 
+}
+
+const NF_ARRAY=[12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
+var slider1 =document.getElementById("slider1");
+var slider2 =document.getElementById("slider2");
+var slideTool =document.getElementById("slideTool");
+var slideLeft =document.getElementById("slideLeft");
+var slideRight =document.getElementById("slideRight");
+var P1 =document.getElementById("p1");
+//滑块1的鼠标按下事件
+slider1.onmousedown=function(e){
+    var evt =e||event;
+    var x =evt.offsetX;
+    var y =evt.offsetY;
+    console.log("leftMouseDown");
+    //当触发滑块1鼠标按下事件时绑定鼠标移动事件
+    document.onmousemove=function(e){
+        var evt =e||event;
+        //根据鼠标的位置和外层的相对偏移量设置滑块的位置
+        slider1.style.left=evt.clientX-slideTool.offsetLeft-x+"px";
+        if(evt.clientX-slideTool.offsetLeft-x<=0){
+            slider1.style.left="0px";
+        }
+        if(evt.clientX-slideTool.offsetLeft-x>=300){
+            slider1.style.left="300px";
+        }
+        if(slider1.offsetLeft >= slider2.offsetLeft){
+            //slider1.style.left = slider2.style.left;
+            slider1.style.left = slider2.offsetLeft - 10 + "px";
+        }
+        //根据滑块的偏移量计算数值
+        var value = Math.floor((slider1.offsetLeft+10)/(300)*(NF_ARRAY[NF_ARRAY.length-1]-NF_ARRAY[0]))+NF_ARRAY[0]-1;
+        slideLeft.style.width=slider1.offsetLeft+"px";
+        value = value+1;
+        if(parseInt(value) < 10){
+            value = '0' + value;
+        }
+        $("#value1").text(value);
+        $("#value1").attr("value",value);
+        NF1=value
+    }
+    //当鼠标按键抬起时解绑鼠标移动事件
+    document.onmouseup=function(e){
+        var evt =e||event;
+        document.onmousemove=null;
+    }
+}
+
+
+slider2.onmousedown=function(e){
+    var evt =e||event;
+    var x =evt.offsetX;
+    var y =evt.offsetY;
+    document.onmousemove=function(e){
+        var evt =e||event;
+        slider2.style.left=evt.clientX-slideTool.offsetLeft-x+"px";
+        if(evt.clientX-slideTool.offsetLeft-x<=0){
+            slider2.style.left="0px";
+        }
+        if(evt.clientX-slideTool.offsetLeft-x>=300){
+            slider2.style.left="300px";
+        }
+        if(slider2.offsetLeft <= slider1.offsetLeft){
+            //slider2.style.left = slider1.style.left;
+            slider2.style.left = slider1.offsetLeft + 10 + "px";
+        }
+        var value = Math.floor((slider2.offsetLeft+10)/(300)*(NF_ARRAY[NF_ARRAY.length-1]-NF_ARRAY[0]))+NF_ARRAY[0]-1;
+        slideRight.style.width=slider2.offsetLeft+"px";
+        value = value+1 ;
+        if(parseInt(value) < 10){
+            value = '0' + value;
+        }
+        $("#value2").text(value);
+        $("#value2").attr("value",value);
+        NF2=value
+    }
+    document.onmouseup=function(){
+        document.onmousemove=null;
+    }
 }
 
 
