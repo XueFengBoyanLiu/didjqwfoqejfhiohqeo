@@ -10,6 +10,71 @@ const colorArray = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
 '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3', 
 '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
 //import jQuery from "jquery";
+const typeArray=['专业任选', '专业必修', '专业限选', '体育', '全校公选课', '军事理论', '双学位', '大学英语', '实习实践', '思想政治', '文科生必修', '毕业论文/设计', '理科生必修', '辅修', '通选课'];
+const currentTypes=[];
+legends=document.getElementById('legend-of-pie');
+function createCheckBox(key,i){
+    var container=document.createElement('div');
+    container.style.display='inline-block';
+
+    var checkBox=document.createElement('input');
+    checkBox.type='checkbox';
+    checkBox.id=key;
+    checkBox.style.color=colorArray[i];
+    checkBox.addEventListener('change',()=>{
+        if (checkBox.checked){
+            currentTypes.push(key);
+        }
+        else{
+            currentTypes.splice(currentTypes.indexOf(key),1);
+        }
+    })
+
+    label=document.createElement('label');
+    label.for=key;
+    label.innerText=key;
+    label.style.color=colorArray[i];
+    label.style.fontSize='50%';
+
+    container.appendChild(checkBox);
+    container.appendChild(label);
+    legends.appendChild(container);
+}
+// function createLabel(key,i){
+//     label=document.createElement('label');
+//     label.for=key;
+//     label.innerText=key;
+//     label.style.color=colorArray[i];
+//     label.fontSize='10px';
+//     legends.appendChild(label);
+// }
+for (let i=0;i<typeArray.length;i++){
+    createCheckBox(typeArray[i],i);
+}
+
+selectBtn=document.getElementById('one-select-all')
+var selectBtnState=false;
+selectBtn.addEventListener('click',()=>{
+    if (selectBtnState){
+        for (let i=0;i<typeArray.length;i++){
+            document.getElementById(typeArray[i]).checked=false;
+        }
+        selectBtnState=false;
+        selectBtn.innerText='全选中';
+        currentTypes=[];
+    }
+    else{
+        for (let i=0;i<typeArray.length;i++){
+            document.getElementById(typeArray[i]).checked=true;
+        }
+        selectBtnState=true;
+        selectBtn.innerText='全不选';
+        currentTypes=typeArray;
+    }
+})
+
+
+
 
 let data;
 function loadData(){
@@ -86,7 +151,7 @@ function firstGraph(dataset) {
         .append("svg") // 在body内添加一个svg元素
         .attr("width", svgWidth)
         .attr("height", svgHeight)
-        .style('border', '1px solid #999999')
+        // .style('border', '1px solid #999999')
 
 
     var line = d3.line() // 创建折线生成器
@@ -186,7 +251,8 @@ function selchgd(){
         success: (data) => {
             if (data.success){
             secondGraph(data.data);
-            console.log(Object.keys(data.data));}
+            // console.log(Object.keys(data.data));
+        }
             else
             window.alert(data.reason);
         },
@@ -202,7 +268,7 @@ function selchgd(){
         contentType: "application/json",
         success: (data) => {
             if (data.success){
-            console.log(data.data);
+            // console.log(data.data);
             thirdGraph(data.data);}
             else
             window.alert(data.reason);
@@ -262,6 +328,7 @@ function secondGraph(data){
     for (let i of document.getElementById("one-course-type").children) {
         i.remove();
     }
+    // console.log(Object.keys(data));
 
     var width = 450
         height = 450
@@ -313,7 +380,10 @@ svg
 // 第三个 直方图
 // set the dimensions and margins of the graph
 function thirdGraph(data){
-    
+    for (let i of document.getElementById("one-course-length").children) {
+        i.remove();
+    }
+
 // set the dimensions and margins of the graph
 var margin = {top: 10, right: 30, bottom: 30, left: 40},
 width = 460 - margin.left - margin.right,
@@ -330,8 +400,8 @@ var svg = d3.select("#one-course-length")
 
 // get the data
 // X axis: scale and draw:
-console.log(data);
-console.log(d3.max(data, function(d) { return d.weektime }));
+// console.log(data);
+// console.log(d3.max(data, function(d) { return d.weektime }));
 var x = d3.scaleLinear()
   .domain([0, d3.max(data, function(d) { return d.weektime })])     // can use this instead of 1000 to have the max of data: d3.max(data, function(d) { return +d.price })
   .range([0, width]);
@@ -430,8 +500,40 @@ function fourthGraph(heatMapData){
         .attr("width", x.bandwidth() )
         .attr("height", y.bandwidth() )
         .style("fill", function(d) { return myColor(d.value)} )
-}
 
+    var rects=document.querySelectorAll('#one-course-dis svg g rect');
+    function showInfo(text,x,y){
+        Info=document.createElement('div');
+        Info.classList.add('info');
+        Info.innerText=text;
+        Info.style.backgroundColor='darkred';
+        Info.style.opacity='0.8';
+        Info.style.padding='5px';
+        Info.style.borderRadius='3px';
+        Info.style.color='white';
+        Info.style.position='absolute';
+        Info.style.zPosition='100';
+        Info.style.left=window.scrollX+x-85+'px';
+        Info.style.top=window.scrollY+y-55+'px';
+
+        document.body.appendChild(Info);
+
+        return Info;
+    }
+    for (let i=0;i<rects.length;i++){
+        var rect=rects[i];
+        rect.style.cursor='pointer';
+
+        rect.addEventListener('mouseover',(event)=>{
+            Info=showInfo(heatMapData[i].value,event.clientX,event.clientY);
+        })
+        rect.addEventListener('mouseout',(event)=>{
+            Info.remove();
+            
+        })
+    }
+    
+}
 
 
 
