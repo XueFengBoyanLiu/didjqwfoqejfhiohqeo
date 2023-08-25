@@ -1,5 +1,5 @@
 from flask import Flask, request, redirect, url_for, make_response
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, Tuple, List, Sequence
 from functools import lru_cache
 from data_cleaning import getdata
 import pandas as pd
@@ -11,11 +11,41 @@ database: pd.DataFrame = pd.read_pickle('df.pkl')
 dataobj = funcs.data(database)
 
 
-def sems_valid(sems: str) -> Tuple[int, int] | None:
-    sems = sems.split('-')
-    if not ((nf := funcs.safe_trans_int(sems[0]) in funcs.NF_TUPLE) and (xq := funcs.safe_trans_int(sems[1]) in funcs.XQ_DICT[nf])):
-        return None
-    return nf, xq
+def is_anyone_not_in_list(seq: Sequence, SEQ: Sequence) -> bool:
+    return any((one_seq not in SEQ) for one_seq in seq)
+
+
+def is_exist_but_not_in_list(x: (int | str) | List[(int | str)], SEQ: Sequence) -> bool:
+    if x:
+        if((type(x) == int or type(x) == str) and x not in SEQ):
+            return True
+        if(type(x) == list and is_anyone_not_in_list(x, SEQ)):
+            return True
+    return False
+
+
+def is_nfxqcol_type_valid(nf: int | List[int], xq: int | List[int], college: str | List[str]) -> bool:
+    if ((type(nf) == int or type(nf) == list) and (type(xq) == int or type(xq) == list) and (type(college) == str or type(college) == list)):
+        return True
+    return False
+
+
+def is_nfxqcol_range_valid(nf: int | List[int], xq: int | List[int], college: str | List[str]) -> bool:
+    if is_exist_but_not_in_list(nf, funcs.NF_TUPLE):
+        return False
+    if is_exist_but_not_in_list(xq, funcs.XQ_TUPLE):
+        return False
+    if is_exist_but_not_in_list(college, funcs.COLLEGE_DICT.keys()):
+        return False
+    return True
+
+
+def nfxqcol_valid(nf: int | List[int], xq: int | List[int], college: str | List[str]) -> None | Tuple[Dict[str, Any], int]:
+    if not is_nfxqcol_type_valid(nf, xq, college):
+        return {"success": False, "reason": "malformed post data"}, 400
+    if not is_nfxqcol_range_valid(nf, xq, college):
+        return {"success": False, "reason": "invalid range of post data"}, 400
+    return
 
 
 @app.route("/api/teapot")
@@ -67,28 +97,26 @@ def api_get_heatmap():
     data: 12*7 2d list
     '''
 
-    qsn: int
-    xq: int
-    college: str
+    nf: int | List[int]
+    xq: int | List[int]
+    college: str | List[str]
     if request.method == 'GET':
-        qsn = 0
+        nf = 0
         xq = 0
         college = ""
     elif request.method == 'POST':
         try:
             j = request.json
-            qsn, xq, college = j['qsn'], j['xq'], j['college']
+            nf, xq, college = j['nf'], j['xq'], j['college']
             del j
         except Exception:
             return {"success": False, "reason": "malformed post data"}, 400
-        if not ((type(qsn) == int) and (type(xq) == int) and (type(college) == str)):
-            return {"success": False, "reason": "malformed post data"}, 400
-        if (qsn and qsn not in funcs.XQ_DICT.keys()) or (xq and xq not in funcs.XQ_DICT[qsn]) or (college and college not in funcs.COLLEGE_DICT.keys()):
-            return {"success": False, "reason": "invalid range of post data"}, 400
+        if (message := nfxqcol_valid(nf, xq, college)):
+            return message
     else:
         return {"success": False, "reason": "unsupported http method"}, 503
 
-    return {"success": True, "data": dataobj.get_heatmap(qsn, xq, college)}, 200
+    return {"success": True, "data": dataobj.get_heatmap(nf, xq, college)}, 200
 
 
 @app.route('/api/get_trend', methods=['GET', 'POST'])
@@ -117,29 +145,25 @@ def api_get_typed_courses():
     return a json dict object
     '''
 
-    qsn: int
-    xq: int
-    college: str
+    nf: int | List[int]
+    xq: int | List[int]
+    college: str | List[str]
     if request.method == 'GET':
-        qsn = 0
+        nf = 0
         xq = 0
         college = ""
     elif request.method == 'POST':
         try:
             j = request.json
-            qsn, xq, college, types = j['qsn'], j['xq'], j['college'], j['types']
+            nf, xq, college, types = j['nf'], j['xq'], j['college'], j['types']
             del j
         except Exception:
             return {"success": False, "reason": "malformed post data"}, 400
-        if not ((type(qsn) == int) and (type(xq) == int) and (type(college) == str) and (type(types) == list)):
-            return {"success": False, "reason": "malformed post data"}, 400
-        if (qsn and qsn not in funcs.XQ_DICT.keys()) or (xq and xq not in funcs.XQ_DICT[qsn]) or (college and college not in funcs.COLLEGE_DICT.keys()):
-            return {"success": False, "reason": "invalid range of post data"}, 400
-        if not all([(x in funcs.COURSE_TYPE_DICT.keys()) for x in types]):
-            return {'success': False, 'reason': 'unsupported types'}
+        if (message := nfxqcol_valid(nf, xq, college)):
+            return message
     else:
         return {"success": False, "reason": "unsupported http method"}, 503
-    return {"success": True, "data": dataobj.get_typed_courses_with_types(qsn, xq, college, types)}, 200
+    return {"success": True, "data": dataobj.get_typed_courses_with_types(nf, xq, college, types)}, 200
 
 
 @app.route('/api/get_weektime_distribution', methods=['GET', 'POST'])
@@ -147,28 +171,26 @@ def api_get_weektime_distribution():
     '''
     return a json dict object
     '''
-    qsn: int
-    xq: int
-    college: str
+    nf: int | List[int]
+    xq: int | List[int]
+    college: str | List[str]
     if request.method == 'GET':
-        qsn = 0
+        nf = 0
         xq = 0
         college = ""
     elif request.method == 'POST':
         try:
             j = request.json
-            qsn, xq, college = j['qsn'], j['xq'], j['college']
+            nf, xq, college = j['nf'], j['xq'], j['college']
             del j
         except Exception:
             return {"success": False, "reason": "malformed post data"}, 400
-        if not ((type(qsn) == int) and (type(xq) == int) and (type(college) == str)):
-            return {"success": False, "reason": "malformed post data"}, 400
-        if (qsn and qsn not in funcs.XQ_DICT.keys()) or (xq and xq not in funcs.XQ_DICT[qsn]) or (college and college not in funcs.COLLEGE_DICT.keys()):
-            return {"success": False, "reason": "invalid range of post data"}, 400
+        if (message := nfxqcol_valid(nf, xq, college)):
+            return message
     else:
         return {"success": False, "reason": "unsupported http method"}, 503
 
-    return {"success": True, "data": dataobj.get_weektime_distribution(qsn, xq, college)}, 200
+    return {"success": True, "data": dataobj.get_weektime_distribution(nf, xq, college)}, 200
 
 
 @app.route('/api/conflict', methods=['GET', 'POST'])

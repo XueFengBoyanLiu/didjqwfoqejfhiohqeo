@@ -1,4 +1,6 @@
-const colorArray=['rgb(122,40,204)', 'rgb(70,40,204)', 'rgb(40,86,204)', 'rgb(40,142,204)', 'rgb(40,180,204)', 'rgb(40,204,191)', 'rgb(40,204,153)', 'rgb(40,204,106)', 'rgb(51,204,40)', 'rgb(153,204,40)', 'rgb(204,156,40)', 'rgb(204,111,40)', 'rgb(204,84,40)', 'rgb(204,60,40)', 'rgb(204,40,40)'];
+const is_debugging=true;
+
+const colorArray = ['rgb(122,40,204)', 'rgb(70,40,204)', 'rgb(40,86,204)', 'rgb(40,142,204)', 'rgb(40,180,204)', 'rgb(40,204,191)', 'rgb(40,204,153)', 'rgb(40,204,106)', 'rgb(51,204,40)', 'rgb(153,204,40)', 'rgb(204,156,40)', 'rgb(204,111,40)', 'rgb(204,84,40)', 'rgb(204,60,40)', 'rgb(204,40,40)'];
 // const colorArray = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6', 
 // '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
 // '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A', 
@@ -119,8 +121,10 @@ jQuery.ajax({
     url: "/api/get_semesters",
     dataType: "json",
     success: function (data) {
-        if (data.success)
+        if (data.success) {
             initializeSemesterSelector(data.data);
+            initializeSemesterSelector2(data.data);
+        }
         else
             window.alert(data.reason);
     },
@@ -144,9 +148,11 @@ jQuery.ajax({
 })
 
 const semesterSelector = document.getElementById('semester-selector');
+const semesterSelector2 = document.getElementById('semester-selector2');
 const schoolSelector = document.getElementById('school-selector');
-let currentSemester = "0-0-0";
-let currentCollege = "";
+let currentSemester = "12-13-1";
+let currentSemester2 = "22-23-1";
+let currentCollege = "00001";
 
 function firstGraph(dataset) {
     for (let i of document.getElementById("one-tendency").children) {
@@ -240,6 +246,14 @@ function initializeSemesterSelector(selectContents) {
         semesterSelector.appendChild(option);
     });
 }
+function initializeSemesterSelector2(selectContents) {
+    const selectOptions = Object.keys(selectContents);
+    selectOptions.forEach(selectOption => {
+        const option = createOption(selectOption, selectContents[selectOption]);
+        // console.log(selectContents[selectOption] + selectOption);
+        semesterSelector2.appendChild(option);
+    });
+}
 
 // 创建学院下拉菜单
 function initializeSchoolSelector(selectContents) {
@@ -251,6 +265,15 @@ function initializeSchoolSelector(selectContents) {
 }
 
 function selchgd() {
+
+    const NF1 = Number(currentSemester.split('-')[0]);
+    const NF2 = Number(currentSemester2.split('-')[0]);
+    const NF = [NF1, NF2];
+    const XQ=Number(currentSemester.split('-')[2]);
+    
+    if(is_debugging)
+        window.alert(JSON.stringify({ college: currentCollege, nf: NF, xq: XQ}))
+
     jQuery.ajax({
         url: "/api/get_trend",
         type: "post",
@@ -276,7 +299,7 @@ function selchgd() {
     jQuery.ajax({
         url: "/api/get_typed_courses",
         type: "post",
-        data: JSON.stringify({ college: currentCollege, qsn: Number(currentSemester.split('-')[0]), xq: Number(currentSemester.split('-')[2]), types: readyTypes }), //:currentTypes.forEach((d)=>{typeObject[d]})
+        data: JSON.stringify({ college: currentCollege, nf: NF, xq: XQ, types: readyTypes }), //:currentTypes.forEach((d)=>{typeObject[d]})
         dataType: "json",
         contentType: "application/json",
         success: (data) => {
@@ -289,13 +312,13 @@ function selchgd() {
         },
         error: (data) => {
             console.log(data);
-            window.alert("update failed here");
+            window.alert("typed courses update failed");
         }
     });
     jQuery.ajax({
         url: "/api/get_weektime_distribution",
         type: "post",
-        data: JSON.stringify({ college: currentCollege, qsn: Number(currentSemester.split('-')[0]), xq: Number(currentSemester.split('-')[2]) }),
+        data: JSON.stringify({ college: currentCollege, nf: NF, xq: XQ}),
         dataType: "json",
         contentType: "application/json",
         success: (data) => {
@@ -307,13 +330,13 @@ function selchgd() {
                 window.alert(data.reason);
         },
         error: (data) => {
-            window.alert("update failed");
+            window.alert("weektime distribution update failed");
         }
     });
     jQuery.ajax({
         url: "/api/get_heatmap",
         type: "post",
-        data: JSON.stringify({ college: currentCollege, qsn: Number(currentSemester.split('-')[0]), xq: Number(currentSemester.split('-')[2]) }),
+        data: JSON.stringify({ college: currentCollege, nf: NF, xq: XQ }),
         dataType: "json",
         contentType: "application/json",
         success: (data) => {
@@ -323,12 +346,13 @@ function selchgd() {
                 window.alert(data.reason);
         },
         error: (data) => {
-            window.alert("update failed");
+            window.alert("heatmap update failed");
         }
     });
 };
 
 semesterSelector.addEventListener('change', (event) => { currentSemester = event.target.selectedOptions[0].style.myid; selchgd(); });
+semesterSelector2.addEventListener('change', (event) => { currentSemester2 = event.target.selectedOptions[0].style.myid; selchgd(); });
 schoolSelector.addEventListener('change', (event) => { currentCollege = event.target.selectedOptions[0].style.myid; selchgd(); });
 
 
@@ -440,10 +464,10 @@ function thirdGraph(data) {
         i.remove();
     }
 
-// set the dimensions and margins of the graph
-var margin = {top: 10, right: 30, bottom: 30, left: 40},
-width = 590 - margin.left - margin.right,
-height = 435 - margin.top - margin.bottom;
+    // set the dimensions and margins of the graph
+    var margin = { top: 10, right: 30, bottom: 30, left: 40 },
+        width = 590 - margin.left - margin.right,
+        height = 435 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
     var svg = d3.select("#one-course-length")

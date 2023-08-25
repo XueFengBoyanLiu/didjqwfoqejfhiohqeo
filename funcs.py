@@ -17,6 +17,7 @@ COURSE_TYPE_DICT = dict(zip(list(range(0, 15)), ('专业任选', '专业必修',
 
 DS_DICT = {'星': 0, '单': 1, '双': 2}
 NF_TUPLE = (12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)
+XQ_TUPLE =(1,2,3)
 XQ_DICT = {12: (2, 3), 13: (1, 2, 3), 14: (1, 2, 3), 15: (1, 2, 3), 16: (1, 2, 3), 17: (
     1, 2, 3), 18: (1, 2, 3), 19: (1, 2, 3), 20: (1, 2, 3), 21: (1, 2, 3), 22: (1, 2, 3), 23: (1,)}
 XQ_NAME_DICT = {0: '所有', 1: '秋', 2: '春', 3: '夏'}
@@ -196,16 +197,29 @@ class data:
         return np.array(teachers, dtype=np.object_)
 
     @staticmethod
-    def get_nf_xq_college_slice(df: pd.DataFrame, qsn: int, xq: int, college: str) -> pd.DataFrame:
+    def get_nf_xq_college_slice(df: pd.DataFrame, nf: int | List[int], xq: int | List[int], college: str | List[str]) -> pd.DataFrame:
         '''
         return a slice of df. Params: college:id
         '''
-        if qsn:
-            df = df[df['qsn'] == qsn]
+        if nf:
+            if type(nf) == int:
+                df = df[df['qsn'] == nf]
+            if type(nf) == list:
+                df = (df[df['qsn']<=max(*nf)])[df['qsn']>=min(*nf)]
         if xq:
-            df = df[df['xq'] == xq]
+            if type(xq) == int:
+                df = df[df['xq'] == xq]
+            if type(xq) == list:
+                for one_xq in XQ_TUPLE:
+                    if one_xq not in xq:
+                        df=df[df['xq']!=one_xq]
         if college:
-            df = df[df['kkxsmc'] == COLLEGE_DICT[college]]
+            if type(college) == str:
+                df = df[df['kkxsmc'] == COLLEGE_DICT[college]]
+            if type(college) == list:
+                for one_col in COLLEGE_DICT.keys():
+                    if one_col not in college:
+                        df=df[df['kkxsmc']!=one_col]
         return df.copy()
 
     # TODO
@@ -218,13 +232,8 @@ class data:
         df = self.df
         this_course_df = df[df['kch'] == kch]
 
-    # TODO
-    def zhuangke_stat(self, kch: str) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
-        df = self.df
-        this_course_df = df[df['kch'] == kch].copy()
-
     @lru_cache
-    def get_heatmap(self, qsn: int, xq: int, college: str) -> List[List[int]]:
+    def get_heatmap(self, nf: int | List[int], xq: int | List[int], college: str | List[str]) -> List[List[int]]:
         '''
         return a len of 12*7 = 84 1-d list of counts of courses
 
@@ -233,7 +242,7 @@ class data:
         return: [{group:星期一,variable:第一节,value:132},...]
         '''
         df = self.df.copy()
-        df = data.get_nf_xq_college_slice(df, qsn, xq, college)
+        df = data.get_nf_xq_college_slice(df, nf, xq, college)
         heatmap = np.zeros((12, 7))
 
         def count_heatmap(course: pd.Series) -> None:
@@ -269,17 +278,17 @@ class data:
         return ret
 
     # @lru_cache    这个加了会报错！！！不知原因
-    def get_typed_courses_with_types(self, qsn: int, xq: int, college: str, types: List[int]) -> Dict[str, int]:
-        origin_typed_courses = self.get_typed_courses(qsn, xq, college)
+    def get_typed_courses_with_types(self, nf: int | List[int], xq: int | List[int], college: str | List[str], types: List[int]) -> Dict[str, int]:
+        origin_typed_courses = self.get_typed_courses(nf, xq, college)
         ret_d = {}
         for x in types:
             ret_d[COURSE_TYPE_DICT[x]] = origin_typed_courses[COURSE_TYPE_DICT[x]]
         return ret_d
 
     @lru_cache
-    def get_typed_courses(self, qsn: int, xq: int, college: str) -> Dict[str, int]:
+    def get_typed_courses(self, nf: int | List[int], xq: int | List[int], college: str | List[str]) -> Dict[str, int]:
         df = self.df.copy()
-        df = data.get_nf_xq_college_slice(df, qsn, xq, college)
+        df = data.get_nf_xq_college_slice(df, nf, xq, college)
         typed_courses = dict(
             zip(COURSE_TYPE_DICT.values(), np.zeros(len(COURSE_TYPE_DICT))))
 
@@ -289,12 +298,12 @@ class data:
         return typed_courses
 
     @lru_cache
-    def get_weektime_distribution(self, qsn: int, xq: int, college: str) -> List[Dict[str, int]]:
+    def get_weektime_distribution(self, nf: int | List[int], xq: int | List[int], college: str | List[str]) -> List[Dict[str, int]]:
         '''
         weektime distributions of courses
         '''
         df = self.df.copy()
-        df = data.get_nf_xq_college_slice(df, qsn, xq, college)
+        df = data.get_nf_xq_college_slice(df, nf, xq, college)
         ret_lst = []
 
         def count_weektime(course: pd.Series) -> None:
