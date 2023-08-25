@@ -322,7 +322,7 @@ class data:
 
         return ret_lst
 
-    def zhuangke(self, kch: str) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
+    def zhuangke(self, kch: str,sth) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
         # 此处对课程进行切片限定
         df = self.df
 
