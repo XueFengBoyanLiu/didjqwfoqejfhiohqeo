@@ -64,7 +64,7 @@ selectBtn.addEventListener('click',()=>{
             document.getElementById(typeArray[i]).checked=false;
         }
         selectBtnState=false;
-        selectBtn.innerText='全选中';
+        selectBtn.innerText='全 选';
         currentTypes=[];
     }
     else{
@@ -91,8 +91,8 @@ function showInfo(text,x,y,bcolor,fcolor){
     Info.style.color=fcolor;
     Info.style.position='absolute';
     Info.style.zPosition='100';
-    Info.style.left=window.scrollX+x-85+'px';
-    Info.style.top=window.scrollY+y-55+'px';
+    Info.style.left=window.scrollX+x-95+'px';
+    Info.style.top=window.scrollY+y-65+'px';
 
     document.body.appendChild(Info);
 
@@ -276,7 +276,7 @@ function selchgd(){
         success: (data) => {
             if (data.success){
             secondGraph(data.data);
-            console.log(data.data);
+            // console.log(data.data);
         }
             else
             window.alert(data.reason);
@@ -350,7 +350,10 @@ const swfunc2=()=>{
 
 // 第二个派图
 // set the dimensions and margins of the graph
+const totalCourseNumber=document.getElementById('total-course-number');
 function secondGraph(data){
+    totalCourseNumber.innerText=d3.sum(Object.values(data));
+
     for (let i of document.getElementById("one-course-type").children) {
         i.remove();
     }
