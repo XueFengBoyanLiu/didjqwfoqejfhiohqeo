@@ -276,7 +276,7 @@ function selchgd(){
         success: (data) => {
             if (data.success){
             secondGraph(data.data);
-            // console.log(Object.keys(data.data));
+            console.log(data.data);
         }
             else
             window.alert(data.reason);
@@ -398,9 +398,24 @@ svg
   .style("opacity", 0.7)
 
 //  画标签
-
-    var pathes=document.querySelectorAll('#one-course-type svg path');
-    function showInfo(text,x,y){}
+var total=d3.sum(Object.values(data));
+var props=[];
+for (let i=0;i<Object.values(data).length;i++){
+    props.push((Object.values(data)[i]/total*100).toFixed(2)+'%');
+}
+console.log('HIHIHIIH');
+var pathes=document.querySelectorAll('#one-course-type svg path');
+for (let i=0;i<pathes.length;i++){
+    var path=pathes[i];
+    path.style.cursor='pointer';
+    path.addEventListener('mouseover',(event)=>{
+        Info=showInfo(Object.keys(data)[i]+': '+props[i],event.clientX,event.clientY,colorArray[i],'white');
+    })
+    path.addEventListener('mouseout',(event)=>{
+        Info.remove();
+    }
+    )
+}
 }
 
 
