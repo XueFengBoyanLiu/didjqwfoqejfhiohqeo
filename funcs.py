@@ -256,12 +256,12 @@ class data:
         return ret
 
     @lru_cache
-    def get_typed_courses_with_types(self, qsn: int, xq: int, college: str,types:list) -> Dict[str, int]:
+    def get_typed_courses_with_types(self, qsn: int, xq: int, college: str,types:list[str]) -> Dict[str, int]:
         origin_typed_courses=self.get_typed_courses(qsn,xq,college)
-        for x in origin_typed_courses.keys():
-            if not x in types:
-                del origin_typed_courses[x]
-        return origin_typed_courses
+        ret_d={}
+        for x in types:
+            ret_d[x]=origin_typed_courses[x]
+        return ret_d
 
     @lru_cache
     def get_typed_courses(self, qsn: int, xq: int, college: str) -> Dict[str, int]:
@@ -273,7 +273,7 @@ class data:
         for c_type in df['kctxm'].unique():
             typed_courses[c_type] = int((df['kctxm'] == c_type).values.sum())
 
-        return dict(sorted(zip(typed_courses.keys(), typed_courses.values())))
+        return typed_courses
 
     @lru_cache
     def get_weektime_distribution(self, qsn: int, xq: int, college: str) -> list[dict[str,int]]:
