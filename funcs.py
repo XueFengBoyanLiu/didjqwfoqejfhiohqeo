@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from typing import Literal, Any, Tuple, List, Dict
+from typing import Literal, Any, Tuple, List, Dict,Callable
 from functools import lru_cache
 
 
@@ -45,6 +45,9 @@ def get_nfxq_UI_text() -> dict[str, str]:
                 d[f'{nf}-{nf+1}-{xq}'] = f'{nf+2001} {XQ_NAME_DICT[xq]}'
     return d
 
+# delete this when all finished
+def lru_cache(anyany:Callable)->Callable:
+    return anyany
 
 class data:
 
@@ -258,7 +261,7 @@ class data:
             ret.append({'semester': nfxq_UI_text[key], 'count': value})
         return ret
 
-    # @lru_cache    加了会报错！！！
+    # @lru_cache    这个加了会报错！！！不知原因
     def get_typed_courses_with_types(self, qsn: int, xq: int, college: str, types:list[int]) -> Dict[str, int]:
         origin_typed_courses = self.get_typed_courses(qsn, xq, college)
         ret_d = {}
@@ -266,7 +269,7 @@ class data:
             ret_d[COURSE_TYPE_DICT[x]] = origin_typed_courses[COURSE_TYPE_DICT[x]]
         return ret_d
 
-    # @lru_cache
+    @lru_cache
     def get_typed_courses(self, qsn: int, xq: int, college: str) -> Dict[str, int]:
         df = self.df.copy()
         df = data.get_nf_xq_college_slice(df, qsn, xq, college)
