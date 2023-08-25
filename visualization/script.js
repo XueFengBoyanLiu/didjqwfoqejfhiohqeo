@@ -11,6 +11,10 @@ const colorArray = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
 '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
 //import jQuery from "jquery";
 const typeArray=['专业任选', '专业必修', '专业限选', '体育', '全校公选课', '军事理论', '双学位', '大学英语', '实习实践', '思想政治', '文科生必修', '毕业论文/设计', '理科生必修', '辅修', '通选课'];
+const typeObject={};
+for (let i=0;i<typeArray.length;i++){
+    typeObject[typeArray[i]]=colorArray[i];
+};
 const currentTypes=[];
 legends=document.getElementById('legend-of-pie');
 function createCheckBox(key,i){
@@ -73,6 +77,27 @@ selectBtn.addEventListener('click',()=>{
     }
 })
 
+
+
+
+function showInfo(text,x,y,bcolor,fcolor){
+    Info=document.createElement('div');
+    Info.classList.add('info');
+    Info.innerText=text;
+    Info.style.backgroundColor=bcolor;
+    Info.style.opacity='0.8';
+    Info.style.padding='5px';
+    Info.style.borderRadius='3px';
+    Info.style.color=fcolor;
+    Info.style.position='absolute';
+    Info.style.zPosition='100';
+    Info.style.left=window.scrollX+x-85+'px';
+    Info.style.top=window.scrollY+y-55+'px';
+
+    document.body.appendChild(Info);
+
+    return Info;
+}
 
 
 
@@ -371,6 +396,11 @@ svg
   .attr("stroke", "black")
   .style("stroke-width", "2px")
   .style("opacity", 0.7)
+
+//  画标签
+
+    var pathes=document.querySelectorAll('#one-course-type svg path');
+    function showInfo(text,x,y){}
 }
 
 
@@ -502,30 +532,12 @@ function fourthGraph(heatMapData){
         .style("fill", function(d) { return myColor(d.value)} )
 
     var rects=document.querySelectorAll('#one-course-dis svg g rect');
-    function showInfo(text,x,y){
-        Info=document.createElement('div');
-        Info.classList.add('info');
-        Info.innerText=text;
-        Info.style.backgroundColor='darkred';
-        Info.style.opacity='0.8';
-        Info.style.padding='5px';
-        Info.style.borderRadius='3px';
-        Info.style.color='white';
-        Info.style.position='absolute';
-        Info.style.zPosition='100';
-        Info.style.left=window.scrollX+x-85+'px';
-        Info.style.top=window.scrollY+y-55+'px';
-
-        document.body.appendChild(Info);
-
-        return Info;
-    }
     for (let i=0;i<rects.length;i++){
         var rect=rects[i];
         rect.style.cursor='pointer';
 
         rect.addEventListener('mouseover',(event)=>{
-            Info=showInfo(heatMapData[i].value,event.clientX,event.clientY);
+            Info=showInfo(heatMapData[i].value,event.clientX,event.clientY,'darkred','white');
         })
         rect.addEventListener('mouseout',(event)=>{
             Info.remove();
