@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from typing import Literal, Any, Tuple, List, Dict,Callable
+from typing import Literal, Any, Tuple, List, Dict, Callable
 from functools import lru_cache
 
 
@@ -12,8 +12,8 @@ NUMBER_DICT = {'一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6,
                '七': 7, '八': 8, '九': 9, '十': 10, '十一': 11, '十二': 12}
 NUMBER_REVERSED_DICT = dict(zip(NUMBER_DICT.values(), NUMBER_DICT.keys()))
 
-COURSE_TYPE_DICT = dict(zip(list(range(0,15)),('专业任选', '专业必修', '专业限选', '体育', '全校公选课', '军事理论', '双学位',
-                     '大学英语', '实习实践', '思想政治', '文科生必修', '毕业论文/设计', '理科生必修', '辅修', '通选课')))
+COURSE_TYPE_DICT = dict(zip(list(range(0, 15)), ('专业任选', '专业必修', '专业限选', '体育', '全校公选课', '军事理论', '双学位',
+                                                 '大学英语', '实习实践', '思想政治', '文科生必修', '毕业论文/设计', '理科生必修', '辅修', '通选课')))
 
 DS_DICT = {'星': 0, '单': 1, '双': 2}
 NF_TUPLE = (12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)
@@ -46,8 +46,11 @@ def get_nfxq_UI_text() -> dict[str, str]:
     return d
 
 # delete this when all finished
-def lru_cache(anyany:Callable)->Callable:
+
+
+def lru_cache(anyany: Callable) -> Callable:
     return anyany
+
 
 class data:
 
@@ -63,12 +66,16 @@ class data:
 
         1:起止周存在重合
         '''
+        try:
+            if (ke1.zzz and ke2.zzz) == 0:
+                return 0  # 如果一门课不存在完好的起止周(主要是终止周是第0周)，则认为是灵活课，不会跟任意课程冲突
 
-        if (ke1.zzz and ke2.zzz) == 0:
-            return 0  # 如果一门课不存在完好的起止周(主要是终止周是第0周)，则认为是灵活课，不会跟任意课程冲突
-
-        if int(ke1.zzz) < int(ke2.qsz) or int(ke2.zzz) < int(ke1.qsz):
-            return 0  # iff 前课的最后一周仍然不到后课第一周，不会冲突
+            if int(ke1.zzz) < int(ke2.qsz) or int(ke2.zzz) < int(ke1.qsz):
+                return 0  # iff 前课的最后一周仍然不到后课第一周，不会冲突
+        except AttributeError:
+            print(ke1)
+            print(ke2)
+            raise(AttributeError)
         return 1
 
     @staticmethod
@@ -212,9 +219,9 @@ class data:
         this_course_df = df[df['kch'] == kch]
 
     # TODO
-    def zhuangke_stat(self, kch: str) -> pd.DataFrame:
+    def zhuangke_stat(self, kch: str) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
         df = self.df
-        this_course_df = df[df['kch'] == kch]
+        this_course_df = df[df['kch'] == kch].copy()
 
     @lru_cache
     def get_heatmap(self, qsn: int, xq: int, college: str) -> List[List[int]]:
@@ -248,7 +255,7 @@ class data:
         return ret_list
 
     @lru_cache
-    def get_trend(self, college: str) -> list[Dict]:
+    def get_trend(self, college: str) -> List[Dict]:
         df = self.df[self.df['kkxsmc'] == COLLEGE_DICT[college]
                      ] if college else self.df.copy()
         trend = {}
@@ -262,7 +269,7 @@ class data:
         return ret
 
     # @lru_cache    这个加了会报错！！！不知原因
-    def get_typed_courses_with_types(self, qsn: int, xq: int, college: str, types:list[int]) -> Dict[str, int]:
+    def get_typed_courses_with_types(self, qsn: int, xq: int, college: str, types: List[int]) -> Dict[str, int]:
         origin_typed_courses = self.get_typed_courses(qsn, xq, college)
         ret_d = {}
         for x in types:
@@ -275,14 +282,14 @@ class data:
         df = data.get_nf_xq_college_slice(df, qsn, xq, college)
         typed_courses = dict(
             zip(COURSE_TYPE_DICT.values(), np.zeros(len(COURSE_TYPE_DICT))))
-        
+
         for c_type in df['kctxm'].unique():
             typed_courses[c_type] = int((df['kctxm'] == c_type).values.sum())
 
         return typed_courses
 
     @lru_cache
-    def get_weektime_distribution(self, qsn: int, xq: int, college: str) -> list[dict[str, int]]:
+    def get_weektime_distribution(self, qsn: int, xq: int, college: str) -> List[Dict[str, int]]:
         '''
         weektime distributions of courses
         '''
@@ -305,3 +312,101 @@ class data:
         df.apply(count_weektime, axis=1)
 
         return ret_lst
+
+    def zhuangke(self, kch: str) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
+        # 此处对课程进行切片限定
+        df = self.df
+
+        return data.zhuangke_stat(df, kch)
+
+    @staticmethod
+    def zhuangke_stat(df: pd.DataFrame, kch: str, sth: Any) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
+        '''
+        ### 不同学期，一定会重复计数
+
+        ### 在同一个学期，同课号的课，考虑重复计数的是时间段
+
+        例如，关注的课是: A课 1班 周一1-4, A课 2班 周一1-4
+
+        eg.1: B课 1班 周一12, B课 2班 周一12
+
+        > 计数1次冲课, return 4
+
+        eg.2: C课 1班 周一12, C课 2班 周一34
+
+        > 计数2次冲课, 两次 return 4
+
+        eg.3: D课 1班 周一1-4, D课 2班 周二1-4
+
+        > 计数1次冲课, return 2
+
+        ### 如果关注的课不同班号有两个时段，则重复计数
+
+        例如，关注的课是: A课 1班 周一1-4, A课 2班 周二1-4
+
+        eg.1: B课 1班 周一12, B课 2班 周一12
+
+        > 计数1次冲课, return 4
+
+        eg.2: E课 1班 周一12, E课 2班 周二34
+
+        > 计数2次冲课, 两次 return 4
+
+        eg.3: D课 1班 周一1-4, D课 2班 周二1-4
+
+        > 计数2次冲课, 两次 return 2
+        '''
+
+        # params
+        # node id, group 都需要唯一性
+        NODE_ID = 'kcmc'
+        NODE_GROUP = 'kctxm'
+        POINTS_DICT = {1: 3, 2: 5, 3: 4, 4: 4}
+
+        this_course_df = df[df['kch'] == kch].copy()
+        otherwise_df = df[df['kch'] != kch].copy()
+
+        nodes = [{'id': this_course_df.loc[1][NODE_ID],
+                  'group':this_course_df.loc[1][NODE_GROUP]}]
+        links = []
+        zhuanged_kch: List[str] = []
+        zhuanged_node: Dict[str, Dict[str, str]] = {}
+        zhuanged_points: Dict[str, int] = {}
+        zhuanged_sksj: Dict[str, List[Tuple]] = {}
+
+        # please apply on dataframe within one year and one semester
+        def iter_course(this_course: pd.Series, course: pd.Series) -> None:
+            if (zhuangke_code := data.is_zhuangke(this_course, course)):
+                if not course['kch'] in zhuanged_kch:
+                    zhuanged_kch.append(course['kch'])
+                    zhuanged_node[course['kch']] = {
+                        'id': course[NODE_ID], 'group': course[NODE_GROUP]}
+                    zhuanged_points[course['kch']] = POINTS_DICT[zhuangke_code]
+                    zhuanged_sksj[course['kch']] = [tuple(course['sksj'])]
+                else:
+                    # 如果课号之前有过撞课，看看是不是同一时间，如果不是再算.
+                    if not (one_sksj := tuple(course['sksj'])) in zhuanged_sksj[course['kch']]:
+                        zhuanged_sksj[course['kch']].append(one_sksj)
+                        zhuanged_points[course['kch']
+                                        ] += POINTS_DICT[zhuangke_code]
+
+        for nfxq in this_course_df.nfxq.unique():
+            this_course_nfxq = this_course_df[this_course_df['nfxq'] == nfxq]
+            otherwise_nfxq = otherwise_df[otherwise_df['nfxq'] == nfxq]
+
+            this_sksj_lst = []
+            for ind, this_course_row in this_course_nfxq.iterrows():
+                if not (this_sksj := list(this_course_row['sksj'])) in this_sksj_lst:
+                    this_sksj_lst.append(this_sksj)
+                    otherwise_nfxq.apply(lambda x: iter_course(
+                        this_course_row, x), axis=1)
+
+            # 每学期结束时刷新时间
+            zhuanged_sksj = dict(
+                zip((l := zhuanged_sksj.keys()), [[] for _ in range(len(l))]))
+
+        for one_kch in zhuanged_kch:
+            nodes.append(zhuanged_node[one_kch])
+            links.append(
+                {'source': this_course_df.loc[1][NODE_ID], 'target': zhuanged_node[one_kch]['id'], 'value': zhuanged_points[one_kch]})
+        return nodes, links
