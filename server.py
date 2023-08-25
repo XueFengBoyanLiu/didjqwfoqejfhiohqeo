@@ -139,6 +139,8 @@ def api_get_typed_courses():
     elif request.method == 'POST':
         try:
             j = request.json
+            with open('types.log','w+') as f:
+                f.write(j['types'])
             qsn, xq, college, types = j['qsn'], j['xq'], j['college'], j['types']
             del j
         except Exception:
@@ -151,8 +153,9 @@ def api_get_typed_courses():
         return {"success": False, "reason": "unsupported http method"}, 503
 
 
-    if not all([(x in funcs.COURSE_TYPE_TUPLE) for x in types]):
-        return {'sucess': False, 'reason': 'unsupported types'}
+    if not all([(x in funcs.COURSE_TYPE_TUPLE) for x in types]) and bool(types):
+        return {'success': False, 'reason': 'unsupported types'}
+
     return {"success": True, "data": dataobj.get_typed_courses_with_types(qsn, xq, college, types)}, 200
 
 
