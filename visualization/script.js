@@ -1,6 +1,6 @@
 const is_debugging=true;
 
-const colorArray = ['rgb(122,40,204)', 'rgb(70,40,204)', 'rgb(40,86,204)', 'rgb(40,142,204)', 'rgb(40,180,204)', 'rgb(40,204,191)', 'rgb(40,204,153)', 'rgb(40,204,106)', 'rgb(51,204,40)', 'rgb(153,204,40)', 'rgb(204,156,40)', 'rgb(204,111,40)', 'rgb(204,84,40)', 'rgb(204,60,40)', 'rgb(204,40,40)'];
+const colorArray=['rgb(122,40,204)', 'rgb(70,40,204)', 'rgb(40,86,204)', 'rgb(40,142,204)', 'rgb(40,180,204)', 'rgb(40,204,191)', 'rgb(40,204,153)', 'rgb(40,204,106)', 'rgb(51,204,40)', 'rgb(153,204,40)', 'rgb(204,156,40)', 'rgb(204,111,40)', 'rgb(204,84,40)', 'rgb(204,60,40)', 'rgb(204,40,40)'];
 // const colorArray = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6', 
 // '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
 // '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A', 
@@ -17,7 +17,7 @@ const typeObject = {};
 for (let i = 0; i < typeArray.length; i++) {
     typeObject[typeArray[i]] = i;
 };
-const currentTypes = [];
+const currentTypes = typeArray;
 legends = document.getElementById('legend-of-pie');
 function createCheckBox(key, i) {
     var container = document.createElement('div');
@@ -25,8 +25,10 @@ function createCheckBox(key, i) {
 
     var checkBox = document.createElement('input');
     checkBox.type = 'checkbox';
+    checkBox.checked = true;
     checkBox.id = key;
     checkBox.style.color = colorArray[i];
+    checkBox.style.cursor = 'pointer';
     checkBox.addEventListener('change', () => {
         if (checkBox.checked) {
             currentTypes.push(key);
@@ -34,6 +36,30 @@ function createCheckBox(key, i) {
         else {
             currentTypes.splice(currentTypes.indexOf(key), 1);
         }
+
+        var readyTypes = [];
+        for (let i = 0; i < currentTypes.length; i++) {
+            readyTypes.push(typeObject[currentTypes[i]])
+        };
+        jQuery.ajax({
+            url: "/api/get_typed_courses",
+            type: "post",
+            data: JSON.stringify({ college: currentCollege, qsn: Number(currentSemester.split('-')[0]), xq: Number(currentSemester.split('-')[2]), types: readyTypes }), //:currentTypes.forEach((d)=>{typeObject[d]})
+            dataType: "json",
+            contentType: "application/json",
+            success: (data) => {
+                if (data.success) {
+                    secondGraph(data.data);
+                    // console.log(data.data);
+                }
+                else
+                    window.alert(data.reason);
+            },
+            error: (data) => {
+                console.log(data);
+                window.alert("update failed here");
+            }
+        });
     })
 
     label = document.createElement('label');
@@ -59,7 +85,7 @@ for (let i = 0; i < typeArray.length; i++) {
 }
 
 selectBtn = document.getElementById('one-select-all')
-var selectBtnState = false;
+var selectBtnState = true;
 selectBtn.addEventListener('click', () => {
     if (selectBtnState) {
         for (let i = 0; i < typeArray.length; i++) {
@@ -121,7 +147,7 @@ jQuery.ajax({
     url: "/api/get_semesters",
     dataType: "json",
     success: function (data) {
-        if (data.success) {
+        if (data.success){
             initializeSemesterSelector(data.data);
             initializeSemesterSelector2(data.data);
         }
@@ -246,14 +272,6 @@ function initializeSemesterSelector(selectContents) {
         semesterSelector.appendChild(option);
     });
 }
-function initializeSemesterSelector2(selectContents) {
-    const selectOptions = Object.keys(selectContents);
-    selectOptions.forEach(selectOption => {
-        const option = createOption(selectOption, selectContents[selectOption]);
-        // console.log(selectContents[selectOption] + selectOption);
-        semesterSelector2.appendChild(option);
-    });
-}
 
 // 创建学院下拉菜单
 function initializeSchoolSelector(selectContents) {
@@ -271,7 +289,7 @@ function selchgd() {
     var XQ=Number(currentSemester.split('-')[2]);
     
     if(is_debugging)
-        window.alert(JSON.stringify({ college: currentCollege, nf: NF, xq: XQ}))
+        window.alert(JSON.stringify({ college: currentCollege, nf: NF, xq: XQ}));
 
     jQuery.ajax({
         url: "/api/get_trend",
@@ -298,7 +316,7 @@ function selchgd() {
     jQuery.ajax({
         url: "/api/get_typed_courses",
         type: "post",
-        data: JSON.stringify({ college: currentCollege, nf: NF, xq: XQ, types: readyTypes }), //:currentTypes.forEach((d)=>{typeObject[d]})
+        data: JSON.stringify({ college: currentCollege, nf: NF, xq: XQ, types: readyTypes }),
         dataType: "json",
         contentType: "application/json",
         success: (data) => {
@@ -330,6 +348,7 @@ function selchgd() {
         },
         error: (data) => {
             window.alert("weektime distribution update failed");
+
         }
     });
     jQuery.ajax({
@@ -406,10 +425,16 @@ function secondGraph(data) {
 
     // Create dummy data
 
+    
     // set the color scale
+
+    var ready_colarArray=[];
+    for(let i=0;i<currentTypes.length;i++){
+        ready_colarArray.push(colorArray[typeObject[Object.keys(data)[i]]]);
+    }
     var color = d3.scaleOrdinal()
         .domain(data)
-        .range(colorArray)
+        .range(ready_colarArray)
 
     // Compute the position of each group on the pie:
     var pie = d3.pie()
@@ -437,13 +462,12 @@ function secondGraph(data) {
     for (let i = 0; i < Object.values(data).length; i++) {
         props.push((Object.values(data)[i] / total * 100).toFixed(2) + '%');
     }
-    console.log('HIHIHIIH');
     var pathes = document.querySelectorAll('#one-course-type svg path');
     for (let i = 0; i < pathes.length; i++) {
         var path = pathes[i];
         path.style.cursor = 'pointer';
         path.addEventListener('mouseover', (event) => {
-            Info = showInfo(Object.keys(data)[i] + ': ' + props[i], event.clientX, event.clientY, colorArray[i], 'white');
+            Info = showInfo(Object.keys(data)[i] + ': ' + props[i], event.clientX, event.clientY, colorArray[typeObject[Object.keys(data)[i]]], 'white');
         })
         path.addEventListener('mouseout', (event) => {
             Info.remove();
@@ -463,10 +487,10 @@ function thirdGraph(data) {
         i.remove();
     }
 
-    // set the dimensions and margins of the graph
-    var margin = { top: 10, right: 30, bottom: 30, left: 40 },
-        width = 590 - margin.left - margin.right,
-        height = 435 - margin.top - margin.bottom;
+// set the dimensions and margins of the graph
+var margin = {top: 10, right: 30, bottom: 30, left: 40},
+width = 590 - margin.left - margin.right,
+height = 435 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
     var svg = d3.select("#one-course-length")
@@ -676,8 +700,168 @@ slider2.onmousedown=function(e){
 }
 
 
-// 初始化
+// 网络可视化
+const courseSelectorInput = document.getElementById('course-selector-input');
+const courseSelectorButton = document.getElementById('course-selector-button');
+const courseSelector = document.getElementById('course-selector');
 
+courseSelectorButton.addEventListener('click', () => {
+    jQuery.ajax({
+        url: "/api/conflict",
+        type: "post",
+        data: {'kch':courseSelectorInput.value},
+        dataType: "json",
+        contentType: "application/json",
+        success: function (data) {
+            if (data.success)
+                ForceGraph(data.data);
+            else
+                window.alert(data.reason);
+        },
+        error: function (data) {
+            window.alert("查询失败");
+        }
+    });
+})
+
+
+
+function ForceGraph({
+    nodes, // an iterable of node objects (typically [{id}, …])
+    links // an iterable of link objects (typically [{source, target}, …])
+  }, {
+    nodeId = d => d.id, // given d in nodes, returns a unique identifier (string)
+    nodeGroup, // given d in nodes, returns an (ordinal) value for color
+    nodeGroups, // an array of ordinal values representing the node groups
+    nodeTitle, // given d in nodes, a title string
+    nodeFill = "currentColor", // node stroke fill (if not using a group color encoding)
+    nodeStroke = "#fff", // node stroke color
+    nodeStrokeWidth = 1.5, // node stroke width, in pixels
+    nodeStrokeOpacity = 1, // node stroke opacity
+    nodeRadius = 5, // node radius, in pixels
+    nodeStrength,
+    linkSource = ({source}) => source, // given d in links, returns a node identifier string
+    linkTarget = ({target}) => target, // given d in links, returns a node identifier string
+    linkStroke = "#999", // link stroke color
+    linkStrokeOpacity = 0.6, // link stroke opacity
+    linkStrokeWidth = 1.5, // given d in links, returns a stroke width in pixels
+    linkStrokeLinecap = "round", // link stroke linecap
+    linkStrength,
+    colors = d3.schemeTableau10, // an array of color strings, for the node groups
+    width = 640, // outer width, in pixels
+    height = 400, // outer height, in pixels
+    invalidation // when this promise resolves, stop the simulation
+  } = {}) {
+    // Compute values.
+    const N = d3.map(nodes, nodeId).map(intern);
+    const LS = d3.map(links, linkSource).map(intern);
+    const LT = d3.map(links, linkTarget).map(intern);
+    if (nodeTitle === undefined) nodeTitle = (_, i) => N[i];
+    const T = nodeTitle == null ? null : d3.map(nodes, nodeTitle);
+    const G = nodeGroup == null ? null : d3.map(nodes, nodeGroup).map(intern);
+    const W = typeof linkStrokeWidth !== "function" ? null : d3.map(links, linkStrokeWidth);
+    const L = typeof linkStroke !== "function" ? null : d3.map(links, linkStroke);
+  
+    // Replace the input nodes and links with mutable objects for the simulation.
+    nodes = d3.map(nodes, (_, i) => ({id: N[i]}));
+    links = d3.map(links, (_, i) => ({source: LS[i], target: LT[i]}));
+  
+    // Compute default domains.
+    if (G && nodeGroups === undefined) nodeGroups = d3.sort(G);
+  
+    // Construct the scales.
+    const color = nodeGroup == null ? null : d3.scaleOrdinal(nodeGroups, colors);
+  
+    // Construct the forces.
+    const forceNode = d3.forceManyBody();
+    const forceLink = d3.forceLink(links).id(({index: i}) => N[i]);
+    if (nodeStrength !== undefined) forceNode.strength(nodeStrength);
+    if (linkStrength !== undefined) forceLink.strength(linkStrength);
+  
+    const simulation = d3.forceSimulation(nodes)
+        .force("link", forceLink)
+        .force("charge", forceNode)
+        .force("center",  d3.forceCenter())
+        .on("tick", ticked);
+  
+    const svg = d3.create("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("viewBox", [-width / 2, -height / 2, width, height])
+        .attr("style", "max-width: 100%; height: auto; height: intrinsic;");
+  
+    const link = svg.append("g")
+        .attr("stroke", typeof linkStroke !== "function" ? linkStroke : null)
+        .attr("stroke-opacity", linkStrokeOpacity)
+        .attr("stroke-width", typeof linkStrokeWidth !== "function" ? linkStrokeWidth : null)
+        .attr("stroke-linecap", linkStrokeLinecap)
+      .selectAll("line")
+      .data(links)
+      .join("line");
+  
+    const node = svg.append("g")
+        .attr("fill", nodeFill)
+        .attr("stroke", nodeStroke)
+        .attr("stroke-opacity", nodeStrokeOpacity)
+        .attr("stroke-width", nodeStrokeWidth)
+      .selectAll("circle")
+      .data(nodes)
+      .join("circle")
+        .attr("r", nodeRadius)
+        .call(drag(simulation));
+  
+    if (W) link.attr("stroke-width", ({index: i}) => W[i]);
+    if (L) link.attr("stroke", ({index: i}) => L[i]);
+    if (G) node.attr("fill", ({index: i}) => color(G[i]));
+    if (T) node.append("title").text(({index: i}) => T[i]);
+    if (invalidation != null) invalidation.then(() => simulation.stop());
+  
+    function intern(value) {
+      return value !== null && typeof value === "object" ? value.valueOf() : value;
+    }
+  
+    function ticked() {
+      link
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x)
+        .attr("y2", d => d.target.y);
+  
+      node
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y);
+    }
+  
+    function drag(simulation) {    
+      function dragstarted(event) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        event.subject.fx = event.subject.x;
+        event.subject.fy = event.subject.y;
+      }
+      
+      function dragged(event) {
+        event.subject.fx = event.x;
+        event.subject.fy = event.y;
+      }
+      
+      function dragended(event) {
+        if (!event.active) simulation.alphaTarget(0);
+        event.subject.fx = null;
+        event.subject.fy = null;
+      }
+      
+      return d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended);
+    }
+  
+    return Object.assign(svg.node(), {scales: {color}});
+  }
+
+
+// 初始化
+selchgd();
 
 
 
