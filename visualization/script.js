@@ -282,8 +282,10 @@ slider1.onmousedown = function (e) {
     document.onmouseup = function (e) {
         var evt = e || event;
         document.onmousemove = null;
+        selchgd();
     }
-}
+};
+slider1.onmouseup = function (e) {selchgd();};
 
 slider2.onmousedown = function (e) {
     var evt = e || event;
@@ -315,7 +317,8 @@ slider2.onmousedown = function (e) {
     document.onmouseup = function () {
         document.onmousemove = null;
     }
-}
+};
+slider2.onmouseup = function (e) {selchgd();};
 
 // 总课程数
 const totalCourseNumber = document.getElementById('total-course-number');
