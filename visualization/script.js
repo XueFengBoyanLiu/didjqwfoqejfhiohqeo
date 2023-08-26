@@ -323,11 +323,13 @@ const courseSelectorInput = document.getElementById('course-selector-input');
 const courseSelectorButton = document.getElementById('course-selector-button');
 const courseSelector = document.getElementById('course-selector');
 
+var kch;
 courseSelectorButton.addEventListener('click', () => {
+    kch=courseSelectorInput.value;
     jQuery.ajax({
         url: "/api/conflict",
         type: "post",
-        data: { 'kch': courseSelectorInput.value },
+        data: JSON.stringify({ 'kch':  kch}),
         dataType: "json",
         contentType: "application/json",
         success: function (data) {

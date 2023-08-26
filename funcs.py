@@ -324,14 +324,13 @@ class data:
 
         return ret_lst
 
-    def zhuangke(self, kch: str,sth) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
+    def zhuangke(self, kch: str,sth: Any) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
         # 此处对课程进行切片限定
         df = self.df
-
         return data.zhuangke_stat(df, kch)
 
     @staticmethod
-    def zhuangke_stat(df: pd.DataFrame, kch: str, sth: Any) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
+    def zhuangke_stat(df: pd.DataFrame, kch: str) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
         '''
         ### 不同学期，一定会重复计数
 
@@ -377,13 +376,14 @@ class data:
         this_course_df = df[df['kch'] == kch].copy()
         otherwise_df = df[df['kch'] != kch].copy()
 
-        nodes = [{'id': this_course_df.loc[1][NODE_ID],
-                  'group':this_course_df.loc[1][NODE_GROUP]}]
+        nodes = [{'id': this_course_df.iloc[1][NODE_ID],
+                  'group':this_course_df.iloc[1][NODE_GROUP]}]
         links = []
         zhuanged_kch: List[str] = []
         zhuanged_node: Dict[str, Dict[str, str]] = {}
         zhuanged_points: Dict[str, int] = {}
         zhuanged_sksj: Dict[str, List[Tuple]] = {}
+
 
         # please apply on dataframe within one year and one semester
         def iter_course(this_course: pd.Series, course: pd.Series) -> None:
@@ -419,5 +419,14 @@ class data:
         for one_kch in zhuanged_kch:
             nodes.append(zhuanged_node[one_kch])
             links.append(
-                {'source': this_course_df.loc[1][NODE_ID], 'target': zhuanged_node[one_kch]['id'], 'value': zhuanged_points[one_kch]})
+                {'source': this_course_df.iloc[1][NODE_ID], 'target': zhuanged_node[one_kch]['id'], 'value': zhuanged_points[one_kch]})
+        
+        with open('conflict.log','a',encoding='utf8') as f:
+            f.write('--------\n')
+            f.write(str(kch)+'\n')
+            f.write('--------\n')
+            f.write(str(nodes)+'\n')
+            f.write('--------\n')
+            f.write(str(links)+'\n')
+
         return nodes, links
