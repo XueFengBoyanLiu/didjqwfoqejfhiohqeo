@@ -17,7 +17,7 @@ COURSE_TYPE_DICT = dict(zip(list(range(0, 15)), ('专业任选', '专业必修',
 
 DS_DICT = {'星': 0, '单': 1, '双': 2}
 NF_TUPLE = (12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)
-XQ_TUPLE =(1,2,3)
+XQ_TUPLE = (1, 2, 3)
 XQ_DICT = {12: (2, 3), 13: (1, 2, 3), 14: (1, 2, 3), 15: (1, 2, 3), 16: (1, 2, 3), 17: (
     1, 2, 3), 18: (1, 2, 3), 19: (1, 2, 3), 20: (1, 2, 3), 21: (1, 2, 3), 22: (1, 2, 3), 23: (1,)}
 XQ_NAME_DICT = {0: '所有', 1: '秋', 2: '春', 3: '夏'}
@@ -197,29 +197,42 @@ class data:
         return np.array(teachers, dtype=np.object_)
 
     @staticmethod
-    def get_nf_xq_college_slice(df: pd.DataFrame, nf: int | List[int], xq: int | List[int], college: str | List[str]) -> pd.DataFrame:
+    def get_nf_xq_college_slice(df: pd.DataFrame, **kwargs) -> pd.DataFrame:
         '''
-        return a slice of df. Params: college:id
+        return a slice of df.
+
+        valid kwargs:
+
+        nf: int | List[int]
+
+        xq: int | List[int]
+
+        college: str | List[str]
+
         '''
-        if nf:
-            if type(nf) == int:
-                df = df[df['qsn'] == nf]
-            if type(nf) == list:
-                df = (df[df['qsn']<=max(*nf)])[df['qsn']>=min(*nf)]
-        if xq:
-            if type(xq) == int:
-                df = df[df['xq'] == xq]
-            if type(xq) == list:
-                for one_xq in XQ_TUPLE:
-                    if one_xq not in xq:
-                        df=df[df['xq']!=one_xq]
-        if college:
-            if type(college) == str:
-                df = df[df['kkxsmc'] == COLLEGE_DICT[college]]
-            if type(college) == list:
-                for one_col in COLLEGE_DICT.keys():
-                    if one_col not in college:
-                        df=df[df['kkxsmc']!=one_col]
+        if 'nf' in kwargs.keys():
+            if (nf := kwargs['nf']):
+                if type(nf) == int:
+                    df = df[df['qsn'] == nf]
+                if type(nf) == list:
+                    df = (df[df['qsn'] <= max(*nf)])[df['qsn'] >= min(*nf)]
+
+        if 'xq' in kwargs.keys():
+            if (xq := kwargs['xq']):
+                if type(xq) == int:
+                    df = df[df['xq'] == xq]
+                if type(xq) == list:
+                    for one_xq in XQ_TUPLE:
+                        if one_xq not in xq:
+                            df = df[df['xq'] != one_xq]
+        if 'college' in kwargs.keys():
+            if(college := kwargs['college']):
+                if type(college) == str:
+                    df = df[df['kkxsmc'] == COLLEGE_DICT[college]]
+                if type(college) == list:
+                    for one_col in COLLEGE_DICT.keys():
+                        if one_col not in college:
+                            df = df[df['kkxsmc'] != one_col]
         return df.copy()
 
     # TODO
@@ -233,7 +246,7 @@ class data:
         this_course_df = df[df['kch'] == kch]
 
     @lru_cache
-    def get_heatmap(self, nf: int | List[int], xq: int | List[int], college: str | List[str]) -> List[List[int]]:
+    def get_heatmap(self, **kwargs) -> List[List[int]]:
         '''
         return a len of 12*7 = 84 1-d list of counts of courses
 
@@ -242,7 +255,7 @@ class data:
         return: [{group:星期一,variable:第一节,value:132},...]
         '''
         df = self.df.copy()
-        df = data.get_nf_xq_college_slice(df, nf, xq, college)
+        df = data.get_nf_xq_college_slice(df, **kwargs)
         heatmap = np.zeros((12, 7))
 
         def count_heatmap(course: pd.Series) -> None:
@@ -264,13 +277,14 @@ class data:
         return ret_list
 
     @lru_cache
-    def get_trend(self, nf: int | List[int], xq: int | List[int], college: str | List[str]) -> List[Dict]:
+    def get_trend(self, **kwargs) -> List[Dict]:
 
-        df=self.df.copy()
-        df = data.get_nf_xq_college_slice(df,nf,xq,college)
+        df = self.df.copy()
+        # df = data.get_nf_xq_college_slice(df,nf,xq,college)
+        df = data.get_nf_xq_college_slice(df, **kwargs)
         trend = {}
         for sems in get_nfxq_UI_text().keys():
-            if (v:=safe_trans_int((df['nfxq'] == sems).values.sum())):
+            if (v := safe_trans_int((df['nfxq'] == sems).values.sum())):
                 trend[sems] = v
         trend = dict(sorted(zip(trend.keys(), trend.values())))
         ret = []
@@ -280,17 +294,17 @@ class data:
         return ret
 
     # @lru_cache    这个加了会报错！！！不知原因
-    def get_typed_courses_with_types(self, nf: int | List[int], xq: int | List[int], college: str | List[str], types: List[int]) -> Dict[str, int]:
-        origin_typed_courses = self.get_typed_courses(nf, xq, college)
+    def get_typed_courses_with_types(self, types: List[int], **kwargs) -> Dict[str, int]:
+        origin_typed_courses = self.get_typed_courses(**kwargs)
         ret_d = {}
         for x in types:
             ret_d[COURSE_TYPE_DICT[x]] = origin_typed_courses[COURSE_TYPE_DICT[x]]
         return ret_d
 
     @lru_cache
-    def get_typed_courses(self, nf: int | List[int], xq: int | List[int], college: str | List[str]) -> Dict[str, int]:
+    def get_typed_courses(self, **kwargs) -> Dict[str, int]:
         df = self.df.copy()
-        df = data.get_nf_xq_college_slice(df, nf, xq, college)
+        df = data.get_nf_xq_college_slice(df, **kwargs)
         typed_courses = dict(
             zip(COURSE_TYPE_DICT.values(), np.zeros(len(COURSE_TYPE_DICT))))
 
@@ -300,12 +314,12 @@ class data:
         return typed_courses
 
     @lru_cache
-    def get_weektime_distribution(self, nf: int | List[int], xq: int | List[int], college: str | List[str]) -> List[Dict[str, int]]:
+    def get_weektime_distribution(self, **kwargs) -> List[Dict[str, int]]:
         '''
         weektime distributions of courses
         '''
         df = self.df.copy()
-        df = data.get_nf_xq_college_slice(df, nf, xq, college)
+        df = data.get_nf_xq_college_slice(df, **kwargs)
         ret_lst = []
 
         def count_weektime(course: pd.Series) -> None:
@@ -324,9 +338,10 @@ class data:
 
         return ret_lst
 
-    def zhuangke(self, kch: str,sth: Any) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
+    def zhuangke(self, kch: str, **kwargs) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
         # 此处对课程进行切片限定
         df = self.df
+        df = data.get_nf_xq_college_slice(df, **kwargs)
         return data.zhuangke_stat(df, kch)
 
     @staticmethod
@@ -384,8 +399,8 @@ class data:
         zhuanged_points: Dict[str, int] = {}
         zhuanged_sksj: Dict[str, List[Tuple]] = {}
 
-
         # please apply on dataframe within one year and one semester
+
         def iter_course(this_course: pd.Series, course: pd.Series) -> None:
             if (zhuangke_code := data.is_zhuangke(this_course, course)):
                 if not course['kch'] in zhuanged_kch:
@@ -420,13 +435,5 @@ class data:
             nodes.append(zhuanged_node[one_kch])
             links.append(
                 {'source': this_course_df.iloc[1][NODE_ID], 'target': zhuanged_node[one_kch]['id'], 'value': zhuanged_points[one_kch]})
-        
-        with open('conflict.log','a',encoding='utf8') as f:
-            f.write('--------\n')
-            f.write(str(kch)+'\n')
-            f.write('--------\n')
-            f.write(str(nodes)+'\n')
-            f.write('--------\n')
-            f.write(str(links)+'\n')
 
         return nodes, links
