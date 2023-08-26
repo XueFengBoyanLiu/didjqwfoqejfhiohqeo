@@ -335,7 +335,7 @@ courseSelectorButton.addEventListener('click', () => {
     jQuery.ajax({
         url: "/api/conflict",
         type: "post",
-        data: JSON.stringify({ 'kch':  kch}),
+        data: JSON.stringify(Object.assign({ 'kch':  kch},seljs),),
         dataType: "json",
         contentType: "application/json",
         success: function (data) {
