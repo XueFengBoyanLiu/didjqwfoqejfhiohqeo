@@ -4,7 +4,6 @@ var NF_ARRAY;
 var NF1 = 12;
 var NF2 = 23;
 var XQ = [1, 2];
-var NF;
 var currentCollege = "00001";
 
 
@@ -208,11 +207,12 @@ xq3el.checked = false;
 function xq_refresh() {
     XQ = []
     if (xq1el.checked)
-        XQ.push(1)
+        XQ.push(1);
     if (xq2el.checked)
-        XQ.push(2)
+        XQ.push(2);
     if (xq3el.checked)
-        XQ.push(3)
+        XQ.push(3);
+    selchgd();
 }
 xq1el.addEventListener('input', (event) => { xq_refresh(); })
 xq2el.addEventListener('input', (event) => { xq_refresh(); })
@@ -282,8 +282,10 @@ slider1.onmousedown = function (e) {
     document.onmouseup = function (e) {
         var evt = e || event;
         document.onmousemove = null;
+        selchgd();
     }
-}
+};
+slider1.onmouseup = function (e) {selchgd();};
 
 slider2.onmousedown = function (e) {
     var evt = e || event;
@@ -315,7 +317,8 @@ slider2.onmousedown = function (e) {
     document.onmouseup = function () {
         document.onmousemove = null;
     }
-}
+};
+slider2.onmouseup = function (e) {selchgd();};
 
 // 总课程数
 const totalCourseNumber = document.getElementById('total-course-number');

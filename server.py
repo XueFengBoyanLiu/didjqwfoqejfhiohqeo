@@ -80,7 +80,7 @@ def api_get_semesters():
     '''
     data:json
     '''
-    return {"success": True, "data": {'NF':list(funcs.NF_TUPLE)}}
+    return {"success": True, "data": {'NF': list(funcs.NF_TUPLE)}}
 
 
 @app.route("/api/get_college")
@@ -134,7 +134,7 @@ def api_get_trend():
     elif request.method == "POST":
         try:
             j = request.json
-            nf, xq, college= j['nf'], j['xq'], j['college']
+            nf, xq, college = j['nf'], j['xq'], j['college']
             del j
         except Exception:
             return {"success": False, "reason": "malformed post data"}, 400
@@ -143,7 +143,7 @@ def api_get_trend():
     else:
         return {"success": False, "reason": "unsupported http method"}, 400
 
-    return {"success": True, "data": dataobj.get_trend(nf,xq,college)}, 200
+    return {"success": True, "data": dataobj.get_trend(nf, xq, college)}, 200
 
 
 @app.route('/api/get_typed_courses', methods=['GET', 'POST'])
@@ -225,8 +225,8 @@ def api_conflict():
         #     return {"success": False, "reason": "invalid range of post data"}, 400
     else:
         return {"success": False, "reason": "unsupported http method"}, 503
-
-    return {"success": True, "data": dataobj.zhuangke(kch, sth)}, 200
+    nodes, links = dataobj.zhuangke(kch, sth)
+    return {"success": True, "data": {'nodes': nodes, 'links': links}}, 200
 
 
 @app.route("/")
