@@ -70,6 +70,8 @@ for (let i = 0; i < typeArray.length; i++) {
     createCheckBox(typeArray[i], i);
 }
 
+refreshBtn=document.getElementById('refresh')
+refreshBtn.addEventListener('click',()=>{selchgd()})
 selectBtn = document.getElementById('one-select-all')
 var selectBtnState = true;
 selectBtn.addEventListener('click', () => {
