@@ -5,3 +5,4 @@ database.json.gz
 visualization/try/
 my_test/
 *.zip
+conflict.log

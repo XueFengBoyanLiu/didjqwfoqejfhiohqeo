@@ -121,6 +121,8 @@ def api_get_heatmap():
     elif request.method == 'POST':
         try:
             kwargs = request.json
+            if 'types' in kwargs:
+                del kwargs['types']
         except Exception:
             return {"success": False, "reason": "malformed post data"}, 400
         if (message := nfxqcol_valid(**kwargs)):
@@ -148,6 +150,8 @@ def api_get_trend():
     elif request.method == "POST":
         try:
             kwargs = request.json
+            if 'types' in kwargs:
+                del kwargs['types']
         except Exception:
             return {"success": False, "reason": "malformed post data"}, 400
         if (message := nfxqcol_valid(**kwargs)):
@@ -178,7 +182,7 @@ def api_get_typed_courses():
         try:
             kwargs = request.json
             types=kwargs['types']
-            del kwargs[types]
+            del kwargs['types']
         except Exception:
             return {"success": False, "reason": "malformed post data"}, 400
         if (message := nfxqcol_valid(**kwargs)):
@@ -205,6 +209,8 @@ def api_get_weektime_distribution():
     elif request.method == 'POST':
         try:
             kwargs = request.json
+            if 'types' in kwargs:
+                del kwargs['types']
         except Exception:
             return {"success": False, "reason": "malformed post data"}, 400
         if (message := nfxqcol_valid(**kwargs)):
