@@ -14,7 +14,8 @@ NUMBER_REVERSED_DICT = dict(zip(NUMBER_DICT.values(), NUMBER_DICT.keys()))
 
 COURSE_TYPE_DICT = dict(zip(list(range(0, 15)), ('专业任选', '专业必修', '专业限选', '体育', '全校公选课', '军事理论', '双学位',
                                                  '大学英语', '实习实践', '思想政治', '文科生必修', '毕业论文/设计', '理科生必修', '辅修', '通选课')))
-COURSE_TYPE_REVERSED_DICT =dict(zip(COURSE_TYPE_DICT.values(),COURSE_TYPE_DICT.keys()))
+COURSE_TYPE_REVERSED_DICT = dict(
+    zip(COURSE_TYPE_DICT.values(), COURSE_TYPE_DICT.keys()))
 
 DS_DICT = {'星': 0, '单': 1, '双': 2}
 NF_TUPLE = (12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)
@@ -337,6 +338,7 @@ class data:
 
         return ret_lst
 
+    @lru_cache
     def zhuangke_stat(self, kch: str, **kwargs) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
         '''
         ### 不同学期，一定会重复计数
@@ -378,7 +380,7 @@ class data:
         # node id, group 都需要唯一性
         NODE_ID = 'kcmc'
         NODE_GROUP = 'kctxm'
-        POINTS_DICT = {1: 3, 2: 5, 3: 4, 4: 4}
+        POINTS_DICT = {1: 3, 2: 6, 3: 5, 4: 5}
 
         df = self.df
         df = data.get_nf_xq_college_slice(df, **kwargs)
@@ -426,7 +428,8 @@ class data:
             zhuanged_sksj = dict(
                 zip((l := zhuanged_sksj.keys()), [[] for _ in range(len(l))]))
 
-        for one_kch in zhuanged_kch:
+        alpha = 0.95
+        for one_kch in sorted(zhuanged_kch, key=lambda x: zhuanged_points[x], reverse=True)[:int(len(zhuanged_kch)*alpha)]:
             nodes.append(zhuanged_node[one_kch])
             links.append(
                 {'source': this_course_df.iloc[0][NODE_ID], 'target': zhuanged_node[one_kch]['id'], 'value': zhuanged_points[one_kch]})

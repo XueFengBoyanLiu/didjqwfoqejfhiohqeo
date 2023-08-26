@@ -4,7 +4,7 @@ var NF_ARRAY;
 var NF1 = 12;
 var NF2 = 23;
 var XQ = [1, 2];
-var currentCollege = "00001";
+var currentCollege = "";
 
 
 const colorArray = ['rgb(122,40,204)', 'rgb(70,40,204)', 'rgb(40,86,204)', 'rgb(40,142,204)', 'rgb(40,180,204)', 'rgb(40,204,191)', 'rgb(40,204,153)', 'rgb(40,204,106)', 'rgb(51,204,40)', 'rgb(153,204,40)', 'rgb(204,156,40)', 'rgb(204,111,40)', 'rgb(204,84,40)', 'rgb(204,60,40)', 'rgb(204,40,40)'];
@@ -333,7 +333,8 @@ const forceG= document.getElementById('force-graph');
 courseSelectorButton.addEventListener('click', () => {
     kch=courseSelectorInput.value;
     conf_js=JSON.stringify(Object.assign({ 'kch':  kch},kwargs),);
-    window.alert(conf_js);
+    if(is_debugging)
+        window.alert(conf_js);
     jQuery.ajax({
         url: "/api/conflict",
         type: "post",
