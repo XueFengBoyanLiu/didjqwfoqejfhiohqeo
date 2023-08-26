@@ -100,7 +100,7 @@ body{
 /* 调整第三幅图的位置，让图片位于左上方 */
 #one-course-length svg{
     position: absolute;
-    top: 1010px;
+    top: 1038px;
     left: 60px;
 }
 
@@ -180,10 +180,15 @@ select:focus + .focus {
     border-radius: inherit;
 } */
 
+.select_xq {
+    width: 430px;
+    font-size: 1.73rem;
+}
+
 .select_school{
     width: 100%;
     min-width: 28ch;
-    max-width: 33ch;
+    max-width: 34.8ch;
     border: 1px solid var(--select-border);
     border-radius: 0.25em;
     padding: 0.25em 0.5em;
