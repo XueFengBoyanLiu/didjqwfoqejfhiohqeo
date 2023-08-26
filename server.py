@@ -237,7 +237,7 @@ def api_conflict():
 
     else:
         return {"success": False, "reason": "unsupported http method"}, 503
-    nodes, links = dataobj.zhuangke(kch, kwargs)
+    nodes, links = dataobj.zhuangke(kch, **kwargs)
     return {"success": True, "data": {'nodes': nodes, 'links': links}}, 200
 
 
