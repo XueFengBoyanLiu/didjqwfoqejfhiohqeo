@@ -32,6 +32,11 @@ flask --app server run --debug --host=<host> --port=<port>
 
 **请注意: 请不要在公网环境下以--debug参数运行flask，否则安全隐患极大，后果自负！尽管编写的时候我们注意了后端对前端传递的参数进行检查，但是不能保证万无一失，因此在公网环境部署请务必小心！**
 
+### 数据来源
+本数据来自北京大学教务部全校课表查询，使用爬虫进行采集。
+
+https://dean.pku.edu.cn/service/web/courseSearch.php
+
 ### 功能说明
 1. 选择菜单
 - 可以选择年份区间
