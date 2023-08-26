@@ -117,22 +117,6 @@ function showInfo(text, x, y, bcolor, fcolor) {
     return Info;
 }
 
-
-
-let data;
-function loadData() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            // console.log(this.responseText);
-            data = JSON.parse(this.responseText);
-        }
-    };
-    xhttp.open("GET", "../database.json", true);
-    xhttp.send();
-}
-loadData();
-
 jQuery.ajax({
     url: "/api/get_semesters",
     dataType: "json",
@@ -347,7 +331,10 @@ courseSelectorButton.addEventListener('click', () => {
                 for (let i of document.getElementById("force-graph").children) {
                     i.remove();
                 }
-                forceG.appendChild(ForceGraph(data.data, {linkStrength: l => l.value / 5}));
+                forceG.appendChild(ForceGraph(data.data, {
+                    linkStrength: l => l.value,
+                    nodeGroup: n => n.group
+                }));
                 console.log('ForceDown');
                 }
             else

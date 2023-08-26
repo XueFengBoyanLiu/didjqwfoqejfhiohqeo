@@ -429,10 +429,12 @@ class data:
             zhuanged_sksj = dict(
                 zip((l := zhuanged_sksj.keys()), [[] for _ in range(len(l))]))
 
-        alpha = 0.95
-        for one_kch in sorted(zhuanged_kch, key=lambda x: zhuanged_points[x], reverse=True)[:int(len(zhuanged_kch)*alpha)]:
+        zhuanged_kch.sort(key=lambda x: zhuanged_points[x], reverse=True)
+        zhuanged_min = zhuanged_points[zhuanged_kch[-1]]
+        zhuanged_max = zhuanged_points[zhuanged_kch[0]]
+        for one_kch in zhuanged_kch:
             nodes.append(zhuanged_node[one_kch])
             links.append(
-                {'source': this_course_df.iloc[0][NODE_ID], 'target': zhuanged_node[one_kch]['id'], 'value': zhuanged_points[one_kch]})
+                {'source': this_course_df.iloc[0][NODE_ID], 'target': zhuanged_node[one_kch]['id'], 'value': 0.8 + float(zhuanged_points[one_kch] - zhuanged_min) / (zhuanged_max - zhuanged_min) * 4.0})
 
         return nodes, links
