@@ -7,7 +7,7 @@ import funcs
 
 app = Flask(__name__)
 
-database: pd.DataFrame = pd.read_pickle('df.pkl')
+database: pd.DataFrame = getdata()
 dataobj = funcs.data(database)
 
 
