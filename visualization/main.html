@@ -7,6 +7,8 @@
     <script src="d3.v7.js" charset="utf-8"></script>
     <title>Data Visualization</title>
 </head>
+<script src="script_graph.js"></script>
+<script src="script_selchg.js"></script>
 <body>
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
@@ -75,7 +77,7 @@
                         课程类型:<span style="font-size: 50%;">总课程数<span id="total-course-number" style="font-size: 150%;"> 0</span>，鼠标放上可查看详细比例</span>
                         <div id="legend-of-pie">
                             <button id="one-select-all" style="cursor: pointer;">
-                                全 选
+                                全不选
                             </button>
                         </div>
                         <div id="one-course-type">
@@ -92,14 +94,16 @@
                 </div>
             </div>
             <div class="main-display" id="two">
-                <div class="display-type">课程冲突情况</div>
+                <div class="display-type">课程冲突情况
+                    <div id="two-course-selector">
+                        <span>请输入想查询的课程号：</span>
+                        <input type="text" id="course-selector-input">
+                        <button id="course-selector-button">查询</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
-
-
-    
     <script src="script.js"></script>
 </body>
 </html>
