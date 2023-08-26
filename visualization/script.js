@@ -336,8 +336,9 @@ courseSelectorButton.addEventListener('click', () => {
         contentType: "application/json",
         success: function (data) {
             if (data.success){
+                console.log(data.data);
                 ForceGraph(data.data);
-                console.log(data.data);}
+                }
             else
                 window.alert(data.reason);
         },
