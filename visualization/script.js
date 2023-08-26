@@ -15,7 +15,7 @@ const typeObject = {};
 for (let i = 0; i < typeArray.length; i++) {
     typeObject[typeArray[i]] = i;
 };
-const currentTypes = typeArray;
+const currentTypes = JSON.parse (JSON.stringify (typeArray));
 legends = document.getElementById('legend-of-pie');
 function createCheckBox(key, i) {
     var container = document.createElement('div');
@@ -99,7 +99,7 @@ selectBtn.addEventListener('click', () => {
         }
         selectBtnState = true;
         selectBtn.innerText = '全不选';
-        currentTypes = typeArray;
+        currentTypes = JSON.parse (JSON.stringify (typeArray));
     }
 })
 
