@@ -14,6 +14,7 @@ NUMBER_REVERSED_DICT = dict(zip(NUMBER_DICT.values(), NUMBER_DICT.keys()))
 
 COURSE_TYPE_DICT = dict(zip(list(range(0, 15)), ('专业任选', '专业必修', '专业限选', '体育', '全校公选课', '军事理论', '双学位',
                                                  '大学英语', '实习实践', '思想政治', '文科生必修', '毕业论文/设计', '理科生必修', '辅修', '通选课')))
+COURSE_TYPE_REVERSED_DICT =dict(zip(COURSE_TYPE_DICT.values(),COURSE_TYPE_DICT.keys()))
 
 DS_DICT = {'星': 0, '单': 1, '双': 2}
 NF_TUPLE = (12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)
@@ -386,7 +387,7 @@ class data:
         otherwise_df = df[df['kch'] != kch].copy()
 
         nodes = [{'id': this_course_df.iloc[0][NODE_ID],
-                  'group':this_course_df.iloc[0][NODE_GROUP]}]
+                  'group':COURSE_TYPE_REVERSED_DICT[this_course_df.iloc[0][NODE_GROUP]]+1}]
         links = []
         zhuanged_kch: List[str] = []
         zhuanged_node: Dict[str, Dict[str, str]] = {}
@@ -400,7 +401,7 @@ class data:
                 if not course['kch'] in zhuanged_kch:
                     zhuanged_kch.append(course['kch'])
                     zhuanged_node[course['kch']] = {
-                        'id': course[NODE_ID], 'group': course[NODE_GROUP]}
+                        'id': course[NODE_ID], 'group': COURSE_TYPE_REVERSED_DICT[this_course_df.iloc[0][NODE_GROUP]]+1}
                     zhuanged_points[course['kch']] = POINTS_DICT[zhuangke_code]
                     zhuanged_sksj[course['kch']] = [tuple(course['sksj'])]
                 else:
