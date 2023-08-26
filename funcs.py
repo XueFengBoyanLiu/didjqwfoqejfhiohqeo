@@ -209,6 +209,7 @@ class data:
 
         college: str | List[str]
 
+        types: List[int]
         '''
         if 'nf' in kwargs.keys():
             if (nf := kwargs['nf']):
@@ -233,6 +234,11 @@ class data:
                     for one_col in COLLEGE_DICT.keys():
                         if one_col not in college:
                             df = df[df['kkxsmc'] != one_col]
+        if 'types' in kwargs.keys():
+            if (types := kwargs['types']):
+                for x in COURSE_TYPE_DICT.keys():
+                    if not x in types:
+                        df = df[df['kctxm'] != COURSE_TYPE_DICT[x]]
         return df.copy()
 
     # TODO
@@ -293,14 +299,6 @@ class data:
             ret.append({'semester': nfxq_UI_text[key], 'count': value})
         return ret
 
-    # @lru_cache    这个加了会报错！！！不知原因
-    def get_typed_courses_with_types(self, types: List[int], **kwargs) -> Dict[str, int]:
-        origin_typed_courses = self.get_typed_courses(**kwargs)
-        ret_d = {}
-        for x in types:
-            ret_d[COURSE_TYPE_DICT[x]] = origin_typed_courses[COURSE_TYPE_DICT[x]]
-        return ret_d
-
     @lru_cache
     def get_typed_courses(self, **kwargs) -> Dict[str, int]:
         df = self.df.copy()
@@ -338,14 +336,7 @@ class data:
 
         return ret_lst
 
-    def zhuangke(self, kch: str, **kwargs) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
-        # 此处对课程进行切片限定
-        df = self.df
-        df = data.get_nf_xq_college_slice(df, **kwargs)
-        return data.zhuangke_stat(df, kch)
-
-    @staticmethod
-    def zhuangke_stat(df: pd.DataFrame, kch: str) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
+    def zhuangke_stat(self, kch: str, **kwargs) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
         '''
         ### 不同学期，一定会重复计数
 
@@ -388,11 +379,14 @@ class data:
         NODE_GROUP = 'kctxm'
         POINTS_DICT = {1: 3, 2: 5, 3: 4, 4: 4}
 
-        this_course_df = df[df['kch'] == kch].copy()
+        df = self.df
+        df = data.get_nf_xq_college_slice(df, **kwargs)
+
+        this_course_df = self.df[self.df['kch'] == kch].copy()
         otherwise_df = df[df['kch'] != kch].copy()
 
-        nodes = [{'id': this_course_df.iloc[1][NODE_ID],
-                  'group':this_course_df.iloc[1][NODE_GROUP]}]
+        nodes = [{'id': this_course_df.iloc[0][NODE_ID],
+                  'group':this_course_df.iloc[0][NODE_GROUP]}]
         links = []
         zhuanged_kch: List[str] = []
         zhuanged_node: Dict[str, Dict[str, str]] = {}
@@ -434,6 +428,6 @@ class data:
         for one_kch in zhuanged_kch:
             nodes.append(zhuanged_node[one_kch])
             links.append(
-                {'source': this_course_df.iloc[1][NODE_ID], 'target': zhuanged_node[one_kch]['id'], 'value': zhuanged_points[one_kch]})
+                {'source': this_course_df.iloc[0][NODE_ID], 'target': zhuanged_node[one_kch]['id'], 'value': zhuanged_points[one_kch]})
 
         return nodes, links

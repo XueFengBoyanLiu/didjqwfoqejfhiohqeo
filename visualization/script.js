@@ -332,10 +332,12 @@ var kch;
 const forceG= document.getElementById('force-graph');
 courseSelectorButton.addEventListener('click', () => {
     kch=courseSelectorInput.value;
+    conf_js=JSON.stringify(Object.assign({ 'kch':  kch},kwargs),);
+    window.alert(conf_js);
     jQuery.ajax({
         url: "/api/conflict",
         type: "post",
-        data: JSON.stringify(Object.assign({ 'kch':  kch},seljs),),
+        data: conf_js,
         dataType: "json",
         contentType: "application/json",
         success: function (data) {
@@ -495,7 +497,8 @@ function selchgd() {
     for (let i = 0; i < currentTypes.length; i++) {
         readyTypes.push(typeObject[currentTypes[i]])
     }
-    seljs = JSON.stringify({ college: currentCollege, nf: [NF1, NF2], xq: XQ, types: readyTypes });
+    kwargs = { college: currentCollege, nf: [NF1, NF2], xq: XQ, types: readyTypes };
+    seljs=JSON.stringify(kwargs);
     if (is_debugging)
         window.alert(seljs);
     post_selchgd(seljs);

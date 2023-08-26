@@ -24,18 +24,26 @@ def is_exist_but_not_in_list(x: (int | str) | List[(int | str)], SEQ: Sequence) 
     return False
 
 
-def is_nfxqcol_type_valid(nf: int | List[int], xq: int | List[int], college: str | List[str]) -> bool:
-    if ((type(nf) == int or type(nf) == list) and (type(xq) == int or type(xq) == list) and (type(college) == str or type(college) == list)):
-        return True
-    return False
+def is_kwargs_type_valid(nf: int | List[int], xq: int | List[int], college: str | List[str],    types: List[int]) -> bool:
+    if not (type(nf) == int or type(nf) == list):
+        return False
+    if not (type(xq) == int or type(xq) == list):
+        return False
+    if not (type(college) == str or type(college) == list):
+        return False
+    if not (type(types) == list):
+        return False
+    return True
 
 
-def is_nfxqcol_range_valid(nf: int | List[int], xq: int | List[int], college: str | List[str]) -> bool:
+def is_kwargs_range_valid(nf: int | List[int], xq: int | List[int], college: str | List[str],    types: List[int]) -> bool:
     if is_exist_but_not_in_list(nf, funcs.NF_TUPLE):
         return False
     if is_exist_but_not_in_list(xq, funcs.XQ_TUPLE):
         return False
     if is_exist_but_not_in_list(college, funcs.COLLEGE_DICT.keys()):
+        return False
+    if is_exist_but_not_in_list(types, funcs.COURSE_TYPE_DICT.keys()):
         return False
     return True
 
@@ -44,7 +52,9 @@ def nfxqcol_valid(**kwargs) -> None | Tuple[Dict[str, Any], int]:
     nf: int | List[int] = 0
     xq: int | List[int] = 0
     college: str | List[str] = ''
-    valid_keys=['nf','xq','college']
+    types: List[int] = []
+
+    valid_keys = ['nf', 'xq', 'college', 'types']
     for k in kwargs.keys():
         if k not in valid_keys:
             return {"success": False, "reason": "unexpected keyword"}, 400
@@ -54,9 +64,11 @@ def nfxqcol_valid(**kwargs) -> None | Tuple[Dict[str, Any], int]:
         xq = kwargs['xq']
     if 'college' in kwargs.keys():
         college = kwargs['college']
-    if not is_nfxqcol_type_valid(nf, xq, college):
+    if 'types' in kwargs.keys():
+        types = kwargs['types']
+    if not is_kwargs_type_valid(nf, xq, college, types):
         return {"success": False, "reason": "malformed post data"}, 400
-    if not is_nfxqcol_range_valid(nf, xq, college):
+    if not is_kwargs_range_valid(nf, xq, college, types):
         return {"success": False, "reason": "invalid range of post data"}, 400
     return
 
@@ -115,7 +127,7 @@ def api_get_heatmap():
 
     college: str | List[str]
     '''
-    kwargs={}
+    kwargs = {}
     if request.method == 'GET':
         pass
     elif request.method == 'POST':
@@ -144,7 +156,7 @@ def api_get_trend():
 
     college: str | List[str]
     '''
-    kwargs={}
+    kwargs = {}
     if request.method == "GET":
         pass
     elif request.method == "POST":
@@ -173,23 +185,19 @@ def api_get_typed_courses():
 
     college: str | List[str]
     '''
-
-    types: List[int]
-    kwargs={}
+    kwargs = {}
     if request.method == 'GET':
         pass
     elif request.method == 'POST':
         try:
             kwargs = request.json
-            types=kwargs['types']
-            del kwargs['types']
         except Exception:
             return {"success": False, "reason": "malformed post data"}, 400
         if (message := nfxqcol_valid(**kwargs)):
             return message
     else:
         return {"success": False, "reason": "unsupported http method"}, 503
-    return {"success": True, "data": dataobj.get_typed_courses_with_types(types,**kwargs)}, 200
+    return {"success": True, "data": dataobj.get_typed_courses(**kwargs)}, 200
 
 
 @app.route('/api/get_weektime_distribution', methods=['GET', 'POST'])
@@ -203,7 +211,7 @@ def api_get_weektime_distribution():
 
     college: str | List[str]
     '''
-    kwargs={}
+    kwargs = {}
     if request.method == 'GET':
         pass
     elif request.method == 'POST':
@@ -240,10 +248,9 @@ def api_conflict():
             return message
         if not (funcs.safe_trans_int(kch)):
             return {"success": False, "reason": "bad kch"}, 400
-
     else:
         return {"success": False, "reason": "unsupported http method"}, 503
-    nodes, links = dataobj.zhuangke(kch, **kwargs)
+    nodes, links = dataobj.zhuangke_stat(kch,**kwargs)
     return {"success": True, "data": {'nodes': nodes, 'links': links}}, 200
 
 

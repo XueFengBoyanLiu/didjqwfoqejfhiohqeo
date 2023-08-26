@@ -3,9 +3,8 @@ function happy(){
     window.alert('happy');
 };
 
-function post_selchgd(seljs) {
-    //seljs = JSON.stringify({ college: currentCollege, nf: NF, xq: XQ, types: readyTypes });
-
+function post_selchgd() {
+    //seljs = { college: currentCollege, nf: NF, xq: XQ, types: readyTypes }
 
     get_trend();
     post_typed_courses();
