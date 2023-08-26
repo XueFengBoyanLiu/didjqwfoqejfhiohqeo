@@ -100,7 +100,7 @@ body{
 /* 调整第三幅图的位置，让图片位于左上方 */
 #one-course-length svg{
     position: absolute;
-    top: 920px;
+    top: 1010px;
     left: 60px;
 }
 
@@ -132,12 +132,12 @@ select {
   
 :root {
     --select-border: #777;
-    --select-focus: rgb(43, 111, 238);
+    --select-focus: #ab6969;
     --select-arrow: var(--select-border);
 }
 
 
-.select_semester{
+/* .select_semester{
     width: 100%;
     min-width: 8ch;
     max-width: 12ch;
@@ -178,7 +178,7 @@ select:focus + .focus {
     bottom: -1px;
     border: 2px solid var(--select-focus);
     border-radius: inherit;
-}
+} */
 
 .select_school{
     width: 100%;
@@ -189,13 +189,14 @@ select:focus + .focus {
     padding: 0.25em 0.5em;
     font-size: 1.25rem;
     cursor: pointer;
-    line-height: 1.1;
+    line-height: 1.6;
     background-color: #fff;
     background-image: linear-gradient(to top, #d6d5d5, #fff 27%);
     display: grid;
     grid-template-areas: "select";
     align-items: center;
     position: relative;
+    margin-bottom: 5px;
 }
 
 .select_school::after {
@@ -237,8 +238,8 @@ select:focus + .focus {
 #value1{
     margin-top: -40px;
     position: absolute;
-    width: 30px;
-    background-color: black;
+    width: 41px;
+    background-color: rgb(47, 47, 47);
     color: white;
     text-align: center;
     margin-left: -20px;
@@ -247,17 +248,19 @@ select:focus + .focus {
 #value2{
     margin-top: -40px;
     position: absolute;
-    width: 30px;
+    width: 41px;
     background-color: black;
     color: white;
     text-align: center;
     border-radius: 3px;
 }
 #slideToolBorder{
-    margin-left: 80px;
-    margin-top: 50px;
+    margin-left: 0px;
+    margin-top: 10px;
+    margin-bottom: 10px;
     background-color: white;
-    width: 400px;
+    border-radius: 0.15em;
+    width: 407px;
     border: solid 1px brown;
 }
 #slideTitle{
