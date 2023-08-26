@@ -1,40 +1,57 @@
-# didjqwfoqejfhiohqeo
+# PKU全校课表可视化
 
-### Files Intro
+### 目录结构
+- /
+  - visualization/
+    - d3.v5.min.js d3.js 第5版，精简
+    - d3.v7.min.js d3.js 第7版，精简
+    - jquery-3.7.0.min.js jQuery 3.7.0 精简
+    - main.html 主界面
+    - script_graph.js 主界面四张图绘制
+    - script_selchg.js 选择栏事件监听回调函数
+    - script.js 课程冲突图绘制与初始化
+    - style.css 样式表
+  - read_database.ipynb           basic data washing
+  - funcs.py                      some functions 
+  - startserver.bat               open a local server
+  - data_cleaning.py              .py version of read_database.ipynb
+  - funcs_2.py                    WHH's functions (to be continued by him)
+  - server.py                     connections between server and python, containing APIs
+  - requirements.txt 服务端启动依赖
 
-- read_database.ipynb           basic data washing
-- funcs.py                      some functions 
-- startserver.bat               open a local server
-- data_cleaning.py              .py version of read_database.ipynb
-- funcs_2.py                    WHH's functions (to be continued by him)
-- server.py                     connections between server and python, containing APIs
+### 项目部署方式
+1. 请安装flask，至少2.3.0版本或更高。同时要求Python至少3.9版本。推荐方法：
+```sh
+pip install flask==2.3.3
+```
+2. 运行./startserver.bat或./startserver.sh，或者直接运行
+```sh
+flask --app server run --debug --host=<host> --port=<port>
+```
+然后访问127.0.0.1:*\<your port\>* 即可。默认端口是5000。请注意，在Linux系统，使用小于1024的端口可能需要root权限，且不论在何种系统，已被占用的端口都不再能被使用。
 
-2023.8.11
+**请注意: 请不要在公网环境下以--debug参数运行flask，否则安全隐患极大，后果自负！尽管编写的时候我们注意了后端对前端传递的参数进行检查，但是不能保证万无一失，因此在公网环境部署请务必小心！**
 
-initializations. 
+### 功能说明
+1. 选择菜单
+- 可以选择年份区间
+- 可以选择春季、秋季、暑期学期中的一个或多个
+- 对于饼图，可以选择课程类型中的一个或多个
 
-Future Plans
-1. 上课时间判定
-    - 春秋学期稳定性
-    - 星期几稳定性
-    - 时段稳定性
-2. 撞课判定
-    - 选定一门课，统计撞课概况
-    - 撞课排行榜, (eg.A课与B课每次都完全对撞)
-3. 教师判定
-    - 选定一门课，查看历史开课教师
-    - 选定一位教师，查看历史开课记录
-4. TBC...
+2. 图表设计
+- 第一幅图是总览，可以看到选择的数据范围中的开课总数的变化趋势。
+- 第二幅图是课程类型，可以看到选择的数据范围中各种课程的比重，鼠标悬浮可以看到具体数值。
+- 第三幅图是课时分布，可以看到不同课时课程数量的分布
+- 第四幅图是课程时间热度，可以看到一周中各个时段的课程热度情况，鼠标悬浮可以看到具体开课数目。
 
-2023.8.21
-完善了上课时间提取，修改了撞课判定的bug
+3. 冲突分析
+- 输入课程号，可以搜索一门课程和指定范围中所有课程的冲突关系。可视化结果是一张网络，距离中间越近，说明课程冲突成都越大。鼠标悬浮可以看到具体课程名称。
 
-底层函数基本完工，现在可以写应用类的函数了，也就是上次更新提到的Future Plans。例如，给用户“判定”撞课情况，要给用户具体什么信息？
+### 项目意义
+通过可视化课程分布和冲突情况，我们希望同学们和老师们能够合理安排课程学习，特别是对于有辅修双学位学习计划的的同学，能够帮助他们尽量避免课程冲突。
 
-关于类型提示，pd.DataFrame 说明是多条课程。pd.Series 是单条课程。
-
-单条课程指一个df里的index，例如：
-
-> kch:00432150, kcmc:量子力学 (A), kctxm:专业必修, kkxsmc:物理学院, jxbh:1, xf:4, ......
-
-这样单行多列的Series
+### 项目分工
+刘泊岩（组长）：统筹规划，进行网页设计和d3.js可视化代码编写等。
+徐臻：负责数据处理，后端API编写，提供前端易于处理的数据等。
+李博海：负责数据集爬取，后端API协议设计和编写，前端与后端的通信，以及兼容性问题和前端可视化bug修复。
+王鸿辉：负责数据处理，进行d3.js可视化代码编写等。
