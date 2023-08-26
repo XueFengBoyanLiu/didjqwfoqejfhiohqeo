@@ -6,3 +6,5 @@ visualization/try/
 my_test/
 *.zip
 conflict.log
+df.pkl
+test.ipynb
