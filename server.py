@@ -128,7 +128,7 @@ def api_get_heatmap():
     else:
         return {"success": False, "reason": "unsupported http method"}, 503
 
-    return {"success": True, "data": dataobj.get_heatmap(kwargs)}, 200
+    return {"success": True, "data": dataobj.get_heatmap(**kwargs)}, 200
 
 
 @app.route('/api/get_trend', methods=['GET', 'POST'])
@@ -155,7 +155,7 @@ def api_get_trend():
     else:
         return {"success": False, "reason": "unsupported http method"}, 400
 
-    return {"success": True, "data": dataobj.get_trend(kwargs)}, 200
+    return {"success": True, "data": dataobj.get_trend(**kwargs)}, 200
 
 
 @app.route('/api/get_typed_courses', methods=['GET', 'POST'])
@@ -185,7 +185,7 @@ def api_get_typed_courses():
             return message
     else:
         return {"success": False, "reason": "unsupported http method"}, 503
-    return {"success": True, "data": dataobj.get_typed_courses_with_types(types,kwargs)}, 200
+    return {"success": True, "data": dataobj.get_typed_courses_with_types(types,**kwargs)}, 200
 
 
 @app.route('/api/get_weektime_distribution', methods=['GET', 'POST'])
@@ -212,7 +212,7 @@ def api_get_weektime_distribution():
     else:
         return {"success": False, "reason": "unsupported http method"}, 503
 
-    return {"success": True, "data": dataobj.get_weektime_distribution(kwargs)}, 200
+    return {"success": True, "data": dataobj.get_weektime_distribution(**kwargs)}, 200
 
 
 @app.route('/api/conflict', methods=['GET', 'POST'])
