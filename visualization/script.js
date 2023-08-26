@@ -343,6 +343,9 @@ courseSelectorButton.addEventListener('click', () => {
         success: function (data) {
             if (data.success){
                 console.log(data.data);
+                for (let i of document.getElementById("force-graph").children) {
+                    i.remove();
+                }
                 forceG.appendChild(ForceGraph(data.data));
                 console.log('ForceDown');
                 }
@@ -358,7 +361,7 @@ courseSelectorButton.addEventListener('click', () => {
 
 function ForceGraph({
     nodes, // an iterable of node objects (typically [{id}, …])
-    links // an iterable of link objects (typically [{source, target}, …])
+   links // an iterable of link objects (typically [{source, target}, …])
 }, {
     nodeId = d => d.id, // given d in nodes, returns a unique identifier (string)
     nodeGroup, // given d in nodes, returns an (ordinal) value for color
@@ -379,7 +382,7 @@ function ForceGraph({
     linkStrength,
     colors = d3.schemeTableau10, // an array of color strings, for the node groups
     width = 1000, // outer width, in pixels
-    height = 1000, // outer height, in pixels
+    height = 500, // outer height, in pixels
     invalidation // when this promise resolves, stop the simulation
 } = {}) {
     // Compute values.
