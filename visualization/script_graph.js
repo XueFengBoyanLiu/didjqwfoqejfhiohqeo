@@ -81,7 +81,7 @@ function firstGraph(dataset) {
 // set the dimensions and margins of the graph
 function secondGraph(data) {
 
-    totalCourseNumber.innerText = d3.sum(Object.values(data));
+    totalCourseNumber.innerText = d4.sum(Object.values(data));
 
     for (let i of document.getElementById("one-course-type").children) {
         i.remove();
@@ -95,7 +95,7 @@ function secondGraph(data) {
     var radius = Math.min(width, height) / 2 - margin
 
     // append the svg object to the div called 'my_dataviz'
-    var svg = d3.select("#one-course-type")
+    var svg = d4.select("#one-course-type")
         .append("svg")
         .attr("width", width)
         .attr("height", height)
@@ -111,14 +111,14 @@ function secondGraph(data) {
     for (let i = 0; i < currentTypes.length; i++) {
         ready_colarArray.push(colorArray[typeObject[Object.keys(data)[i]]]);
     }
-    var color = d3.scaleOrdinal()
+    var color = d4.scaleOrdinal()
         .domain(data)
         .range(ready_colarArray)
 
     // Compute the position of each group on the pie:
-    var pie = d3.pie()
+    var pie = d4.pie()
         .value(function (d) { return d.value; })
-    var data_ready = pie(d3.entries(data))
+    var data_ready = pie(d4.entries(data))
 
     // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
     svg
@@ -126,7 +126,7 @@ function secondGraph(data) {
         .data(data_ready)
         .enter()
         .append('path')
-        .attr('d', d3.arc()
+        .attr('d', d4.arc()
             .innerRadius(0)
             .outerRadius(radius)
         )
@@ -136,7 +136,7 @@ function secondGraph(data) {
         .style("opacity", 0.7)
 
     //  画标签
-    var total = d3.sum(Object.values(data));
+    var total = d4.sum(Object.values(data));
     var props = [];
     for (let i = 0; i < Object.values(data).length; i++) {
         props.push((Object.values(data)[i] / total * 100).toFixed(2) + '%');
