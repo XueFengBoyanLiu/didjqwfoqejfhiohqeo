@@ -329,6 +329,7 @@ const courseSelectorButton = document.getElementById('course-selector-button');
 const courseSelector = document.getElementById('course-selector');
 
 var kch;
+const forceG= document.getElementById('force-graph');
 courseSelectorButton.addEventListener('click', () => {
     kch=courseSelectorInput.value;
     jQuery.ajax({
@@ -340,7 +341,8 @@ courseSelectorButton.addEventListener('click', () => {
         success: function (data) {
             if (data.success){
                 console.log(data.data);
-                ForceGraph(data.data);
+                forceG.appendChild(ForceGraph(data.data));
+                console.log('ForceDown');
                 }
             else
                 window.alert(data.reason);
@@ -374,8 +376,8 @@ function ForceGraph({
     linkStrokeLinecap = "round", // link stroke linecap
     linkStrength,
     colors = d3.schemeTableau10, // an array of color strings, for the node groups
-    width = 640, // outer width, in pixels
-    height = 400, // outer height, in pixels
+    width = 1000, // outer width, in pixels
+    height = 1000, // outer height, in pixels
     invalidation // when this promise resolves, stop the simulation
 } = {}) {
     // Compute values.
