@@ -26,7 +26,7 @@ const typeObject = {};
 for (let i = 0; i < typeArray.length; i++) {
     typeObject[typeArray[i]] = i;
 };
-const currentTypes = JSON.parse (JSON.stringify (typeArray));
+var currentTypes = JSON.parse (JSON.stringify (typeArray));
 legends = document.getElementById('legend-of-pie');
 function createCheckBox(key, i) {
     var container = document.createElement('div');
@@ -62,7 +62,7 @@ function createCheckBox(key, i) {
 //     label=document.createElement('label');
 //     label.for=key;
 //     label.innerText=key;
-//     label.style.color=colorArray[i];
+//     label.style.color=colorArray[i]course;
 //     label.fontSize='10px';
 //     legends.appendChild(label);
 // }
@@ -335,8 +335,9 @@ courseSelectorButton.addEventListener('click', () => {
         dataType: "json",
         contentType: "application/json",
         success: function (data) {
-            if (data.success)
+            if (data.success){
                 ForceGraph(data.data);
+                console.log(data.data);}
             else
                 window.alert(data.reason);
         },
