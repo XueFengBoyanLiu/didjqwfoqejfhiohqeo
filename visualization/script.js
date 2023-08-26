@@ -346,7 +346,7 @@ courseSelectorButton.addEventListener('click', () => {
                 for (let i of document.getElementById("force-graph").children) {
                     i.remove();
                 }
-                forceG.appendChild(ForceGraph(data.data));
+                forceG.appendChild(ForceGraph(data.data, {linkStrength: l => l.value / 5}));
                 console.log('ForceDown');
                 }
             else
@@ -389,6 +389,7 @@ function ForceGraph({
     const N = d3.map(nodes, nodeId).map(intern);
     const LS = d3.map(links, linkSource).map(intern);
     const LT = d3.map(links, linkTarget).map(intern);
+    const LV = d3.map(links, linkStrength).map(intern);
     if (nodeTitle === undefined) nodeTitle = (_, i) => N[i];
     const T = nodeTitle == null ? null : d3.map(nodes, nodeTitle);
     const G = nodeGroup == null ? null : d3.map(nodes, nodeGroup).map(intern);
@@ -397,7 +398,7 @@ function ForceGraph({
 
     // Replace the input nodes and links with mutable objects for the simulation.
     nodes = d3.map(nodes, (_, i) => ({ id: N[i] }));
-    links = d3.map(links, (_, i) => ({ source: LS[i], target: LT[i] }));
+    links = d3.map(links, (_, i) => ({ source: LS[i], target: LT[i], value: LV[i] }));
 
     // Compute default domains.
     if (G && nodeGroups === undefined) nodeGroups = d3.sort(G);
